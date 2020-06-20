@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
+
+    <!--Sdk's Ids-->
+    <string name="facebook_application_id" translatable="false">891861644627572</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb891861644627572</string>
+    <string name="google_id_token" translatable="false">"702577599519-sppkh2kbc59g8b1cb33mvrm1smqrm3rc.apps.googleusercontent.com"</string>
+
+    <!--Texts-->
+    <string name="headline">Find a nice restaurant and invite your co-workers for lunch!</string>
+    <string name="text_google_login">Sign in with Google</string>
+    <string name="text_facebook_login">Sign in with Facebook</string>
+
 </resources>

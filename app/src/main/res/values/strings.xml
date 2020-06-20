@@ -13,5 +13,13 @@
     <string name="navbar_map">Map View</string>
     <string name="navbar_list">List View</string>
     <string name="navbar_workmates">Workmates</string>
+    <string name="drawer_lunch">YOUR LUNCH</string>
+    <string name="drawer_settings">SETTINGS</string>
+    <string name="drawer_logout">LOGOUT</string>
+    <string name="settings_activity_title">Settings</string>
+
+    <!-- Used in NavigationDrawer -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 </resources>

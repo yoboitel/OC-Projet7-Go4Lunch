@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="headline">Trouve un resto cool et invite tes collègues à déjeuner!</string>
+    <string name="text_google_login">Se connecter avec Google</string>
+    <string name="text_facebook_login">Se connecter avec Facebook</string>
+    <string name="navbar_map">Carte</string>
+    <string name="navbar_list">Liste</string>
+    <string name="navbar_workmates">Collègues</string>
+</resources>

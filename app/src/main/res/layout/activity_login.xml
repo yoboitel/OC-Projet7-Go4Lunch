@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scaleY="1.003"
-    tools:context=".LoginActivity" >
+    tools:context=".activity.LoginActivity" >
 
     <ImageView
         android:id="@+id/imageView2"
@@ -74,15 +74,15 @@
 
                 <Button
                     android:id="@+id/btnLoginFb"
-                    android:text="@string/text_facebook_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/btn_facebook_background"
-                    android:textColor="@android:color/white"
-                    android:textAllCaps="false"
                     android:drawableStart="@drawable/icon_fb"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent" />
+                    android:text="@string/text_facebook_login"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white" />
 
                 <com.facebook.login.widget.LoginButton
                     android:id="@+id/login_button_fb"

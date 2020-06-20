@@ -1,4 +1,4 @@
-package com.yohan.go4lunch;
+package com.yohan.go4lunch.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +29,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.yohan.go4lunch.R;
 
 public class LoginActivity extends AppCompatActivity {
 

@@ -11,4 +11,6 @@
     <string name="drawer_settings">PARAMÈTRES</string>
     <string name="drawer_logout">SE DÉCONNECTER</string>
     <string name="settings_activity_title">Paramètres</string>
+    <string name="toolbar_first_title">J\'ai Faim!</string>
+    <string name="toolbar_second_title">Collègues disponibles</string>
 </resources>

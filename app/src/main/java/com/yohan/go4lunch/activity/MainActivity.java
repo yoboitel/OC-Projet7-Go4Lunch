@@ -21,8 +21,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.fragments.FragmentList;
-import com.yohan.go4lunch.fragments.FragmentMap;
 import com.yohan.go4lunch.fragments.FragmentWorkmates;
+import com.yohan.go4lunch.fragments.FragmentMap;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -70,12 +70,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigation_map:
+                        toolbar.setTitle(R.string.toolbar_first_title);
                         MainActivity.this.displayFragment(new FragmentMap());
                         return true;
                     case R.id.navigation_list:
+                        toolbar.setTitle(R.string.toolbar_first_title);
                         MainActivity.this.displayFragment(new FragmentList());
                         return true;
                     case R.id.navigation_workmates:
+                        toolbar.setTitle(R.string.toolbar_second_title);
                         MainActivity.this.displayFragment(new FragmentWorkmates());
                         return true;
                 }

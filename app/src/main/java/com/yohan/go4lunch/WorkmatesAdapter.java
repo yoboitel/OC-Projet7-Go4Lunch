@@ -58,7 +58,7 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         User item = list.get(position);
-        
+
         holder.bind(item, onItemClickListener);
 
         TextView tvCell = holder.itemView.findViewById(R.id.itemWorkmatesTv);

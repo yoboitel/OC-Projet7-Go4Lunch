@@ -20,9 +20,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.yohan.go4lunch.R;
-import com.yohan.go4lunch.fragments.FragmentList;
-import com.yohan.go4lunch.fragments.FragmentWorkmates;
-import com.yohan.go4lunch.fragments.FragmentMap;
+import com.yohan.go4lunch.fragment.FragmentList;
+import com.yohan.go4lunch.fragment.FragmentWorkmates;
+import com.yohan.go4lunch.fragment.FragmentMap;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 

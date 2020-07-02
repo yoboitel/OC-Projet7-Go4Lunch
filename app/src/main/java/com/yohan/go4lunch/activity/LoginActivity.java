@@ -22,6 +22,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -29,7 +31,9 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.yohan.go4lunch.R;
+import com.yohan.go4lunch.model.User;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -139,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            createUserInFirestore();
                         } else {
                             Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                         }
@@ -149,18 +153,36 @@ public class LoginActivity extends AppCompatActivity {
 
     //Method called to auth user in firebase after it sucessfully authenticated with facebook
     private void firebaseAuthWithFacebook(AccessToken accessToken) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            createUserInFirestore();
                         } else {
                             Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+    }
+
+    private void createUserInFirestore(){
+
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        User newUser = new User(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString() ,null, true);
+        FirebaseFirestore.getInstance().collection("Users").document(user.getUid()).set(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(LoginActivity.this, "User Creation Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

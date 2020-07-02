@@ -1,4 +1,4 @@
-package com.yohan.go4lunch.fragments;
+package com.yohan.go4lunch.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -29,7 +29,7 @@ public class FragmentMap extends Fragment {
 
     private GoogleMap gMap;
     private FusedLocationProviderClient fusedLocationClient;
-    private float ZOOM_LEVEL = 15.0f; //This goes up to 21
+    private int ZOOM_LEVEL = 15; //This goes up to 21
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         @Override

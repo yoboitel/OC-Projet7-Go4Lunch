@@ -22,6 +22,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue 'string', "google_maps_key", google_maps_key
         }
+        debug {
+            resValue 'string', "google_maps_key", google_maps_key
+            it.buildConfigField 'String', 'google_maps_key', google_maps_key
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

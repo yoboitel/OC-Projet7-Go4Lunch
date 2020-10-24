@@ -65,25 +65,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void bottomNavBarFragmentsManagement() {
         bottomNavigationView = findViewById(R.id.navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_map:
-                        toolbar.setTitle(R.string.toolbar_first_title);
-                        MainActivity.this.displayFragment(new FragmentMap());
-                        return true;
-                    case R.id.navigation_list:
-                        toolbar.setTitle(R.string.toolbar_first_title);
-                        MainActivity.this.displayFragment(new FragmentList());
-                        return true;
-                    case R.id.navigation_workmates:
-                        toolbar.setTitle(R.string.toolbar_second_title);
-                        MainActivity.this.displayFragment(new FragmentWorkmates());
-                        return true;
-                }
-                return false;
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_map:
+                    toolbar.setTitle(R.string.toolbar_first_title);
+                    MainActivity.this.displayFragment(new FragmentMap());
+                    return true;
+                case R.id.navigation_list:
+                    toolbar.setTitle(R.string.toolbar_first_title);
+                    MainActivity.this.displayFragment(new FragmentList());
+                    return true;
+                case R.id.navigation_workmates:
+                    toolbar.setTitle(R.string.toolbar_second_title);
+                    MainActivity.this.displayFragment(new FragmentWorkmates());
+                    return true;
             }
+            return false;
         });
     }
 

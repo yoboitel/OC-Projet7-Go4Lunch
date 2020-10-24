@@ -1,14 +1,17 @@
-package com.yohan.go4lunch;
+package com.yohan.go4lunch.adapter;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.model.User;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.ViewHolder> {
@@ -31,17 +34,12 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
 
         }
 
-        public void bind(final User model, final OnItemClickListener listener) {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(getLayoutPosition());
-
-                }
-            });
+        public void bind(final OnItemClickListener listener) {
+            itemView.setOnClickListener(v -> listener.onItemClick(getLayoutPosition()));
         }
     }
 
+    @NotNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -49,9 +47,7 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
 
         View view = inflater.inflate(R.layout.item_workmates, parent, false);
 
-        ViewHolder viewHolder = new ViewHolder(view);
-
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
 
@@ -59,18 +55,16 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
     public void onBindViewHolder(ViewHolder holder, int position) {
         User item = list.get(position);
 
-        holder.bind(item, onItemClickListener);
+        holder.bind(onItemClickListener);
 
         TextView tvCell = holder.itemView.findViewById(R.id.itemWorkmatesTv);
-        SimpleDraweeView ivCell = holder.itemView.findViewById(R.id.itemWorkmatesProfilePicture);
+        SimpleDraweeView ivCell = holder.itemView.findViewById(R.id.ivListRestaurantPreview);
 
         if (item.getChoosedRestaurantId() != null)
             tvCell.setText(item.getFirstnameAndName() + " is eating at DelArte");
 
         else
             tvCell.setText(item.getFirstnameAndName() + " hasn't decided yet");
-
-
 
         ivCell.setImageURI(item.getPhotoUrl());
     }

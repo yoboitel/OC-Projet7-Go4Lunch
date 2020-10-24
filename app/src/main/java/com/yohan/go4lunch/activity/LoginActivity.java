@@ -1,12 +1,10 @@
 package com.yohan.go4lunch.activity;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import com.facebook.AccessToken;
@@ -21,12 +19,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,39 +54,33 @@ public class LoginActivity extends AppCompatActivity {
         initialization();
 
         //Click on Google login
-        btnLoginGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent signInIntent = mgoogleSignInClient.getSignInIntent();
-                startActivityForResult(signInIntent, 999);
-            }
+        btnLoginGoogle.setOnClickListener(view -> {
+            Intent signInIntent = mgoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, 999);
         });
 
         //Click on Facebook login
-        btnLoginFb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        btnLoginFb.setOnClickListener(view -> {
 
-                loginButton.setPermissions("email", "public_profile");
-                loginButton.performClick();
+            loginButton.setPermissions("email", "public_profile");
+            loginButton.performClick();
 
-                LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        firebaseAuthWithFacebook(loginResult.getAccessToken());
-                    }
+            LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    firebaseAuthWithFacebook(loginResult.getAccessToken());
+                }
 
-                    @Override
-                    public void onCancel() {
-                        Log.d("FBAUTH", "facebook:onCancel");
-                    }
+                @Override
+                public void onCancel() {
+                    Log.d("FBAUTH", "facebook:onCancel");
+                }
 
-                    @Override
-                    public void onError(FacebookException error) {
-                        Log.d("FBAUTH", "facebook:onError", error);
-                    }
-                });
-            }
+                @Override
+                public void onError(FacebookException error) {
+                    Log.d("FBAUTH", "facebook:onError", error);
+                }
+            });
         });
     }
 
@@ -139,14 +127,11 @@ public class LoginActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            createUserInFirestore();
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        createUserInFirestore();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -155,14 +140,11 @@ public class LoginActivity extends AppCompatActivity {
     private void firebaseAuthWithFacebook(AccessToken accessToken) {
         final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            createUserInFirestore();
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        createUserInFirestore();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -172,17 +154,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
 
         User newUser = new User(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString() ,null, true);
-        FirebaseFirestore.getInstance().collection("Users").document(user.getUid()).set(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(LoginActivity.this, "User Creation Failed", Toast.LENGTH_SHORT).show();
-            }
-        });
+        FirebaseFirestore.getInstance().collection("Users").document(user.getUid()).set(newUser).addOnSuccessListener(aVoid -> startActivity(new Intent(LoginActivity.this, MainActivity.class))).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "User Creation Failed", Toast.LENGTH_SHORT).show());
     }
 
 }

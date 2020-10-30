@@ -2,6 +2,7 @@ package com.yohan.go4lunch.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +42,7 @@ public class FragmentList extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     private PlacesClient mPlacesClient;
     private Place mPlace;
+    private Location mLastKnownLocation;
 
     public FragmentList() {
         // Required empty public constructor
@@ -87,6 +89,8 @@ public class FragmentList extends Fragment {
             //Permission is granted so retrieve the user's last position
             fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null) {
+
+                    mLastKnownLocation = location;
 
                     //Find nearby locations
                     // Use fields to define the data types to return.
@@ -137,15 +141,26 @@ public class FragmentList extends Fragment {
             OpeningHours openingHours = mPlace.getOpeningHours();
             LatLng latLng = mPlace.getLatLng();
             Double rating = mPlace.getRating();
-            PhotoMetadata photos = null;
-
-            if (mPlace.getPhotoMetadatas() != null) {
+            String placeDistance = getDistanceFromLastKnownLocation(latLng.latitude, latLng.longitude);
+            PhotoMetadata photos;
+            if (mPlace.getPhotoMetadatas() == null) {
+                photos = null;
+            } else {
                 photos = mPlace.getPhotoMetadatas().get(0);
             }
-            //String distance = mPlace.get;
 
-            restaurantList.add(new Restaurant(placeId, placeName, address, openingHours, latLng, null, rating, photos));
+
+            restaurantList.add(new Restaurant(placeId, placeName, address, openingHours, latLng, placeDistance, rating, photos));
             mAdapter.notifyDataSetChanged();
         });
+    }
+
+    public String getDistanceFromLastKnownLocation(Double lat, Double lng) {
+        Location targetLocation = new Location("");
+        targetLocation.setLatitude(lat);
+        targetLocation.setLongitude(lng);
+
+        float distance =  targetLocation.distanceTo(mLastKnownLocation);
+        return (int)distance + "m";
     }
 }

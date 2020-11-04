@@ -64,7 +64,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.8"
                     android:drawableStart="@drawable/ic_outline_person_24"
-                    android:gravity="center_vertical" />
+                    android:gravity="center_vertical"
+                    android:text="(0)" />
             </LinearLayout>
 
             <LinearLayout

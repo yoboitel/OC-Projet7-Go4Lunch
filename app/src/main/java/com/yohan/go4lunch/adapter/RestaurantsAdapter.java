@@ -108,7 +108,8 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         //Display Restaurant Opening Hours
         if (item.getOpeningHours() != null){
             tvRestaurantOpeningHour.setText(item.getOpeningHours().getWeekdayText().get(getDayOfWeek()));
-        }
+        } else
+            tvRestaurantOpeningHour.setText("Can't find opening hours");
 
         //Display Restaurant Distance
         if (item.getDistance() != null) {

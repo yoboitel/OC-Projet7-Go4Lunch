@@ -141,7 +141,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/white"
-            android:drawableTop="@drawable/ic_thumb"
+            android:drawableTop="@drawable/ic_star_unfilled"
             android:paddingTop="15dp"
             android:text="Like"
             android:textColor="@color/colorPrimary" />

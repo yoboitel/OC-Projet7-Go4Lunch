@@ -30,6 +30,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.yohan.go4lunch.R;
@@ -47,7 +48,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     private ImageView ivPhoto, ivRating;
     private TextView tvName, tvAddress;
-    private Button btnPhone, btnWebsite;
+    private Button btnPhone, btnLike,btnWebsite;
     private String restaurantId;
     private PlacesClient mPlacesClient;
     private FloatingActionButton fabGoToRestaurant;
@@ -65,6 +66,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         ivRating = findViewById(R.id.ivDetailRating);
         tvAddress = findViewById(R.id.tvDetailAddress);
         btnPhone = findViewById(R.id.btnDetailCall);
+        btnLike = findViewById(R.id.btnDetailLike);
         btnWebsite = findViewById(R.id.btnDetailWebsite);
         fabGoToRestaurant = findViewById(R.id.fabDetailSelected);
         //Init RecyclerView And Adapter
@@ -80,6 +82,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         restaurantId = getIntent().getStringExtra("EXTRA_RESTAURANT_ID");
         getPlaceInfosFromId(restaurantId);
 
+        //Init Participants list
+        loadParticipantsFromFirestore();
+
         //Init FAB with right image ressource
         FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
             String result = task.getResult().getString("choosedRestaurantId");
@@ -88,8 +93,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                     fabGoToRestaurant.setImageResource(R.drawable.ic_check_activated);
             }
         });
-        //Init Participants list
-        loadParticipantsFromFirestore();
+
         //Handle click on FAB
         fabGoToRestaurant.setOnClickListener(view -> {
 
@@ -106,6 +110,35 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                 }
             });
         });
+
+        //Init Like Button State
+        initLikeButton();
+        //Handle click on Like Button
+        btnLike.setOnClickListener(view -> {
+
+            //Check if user already liked this restaurant
+            FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+                List<String> likedRestaurants = (List<String>) task.getResult().get("liked");
+                if (likedRestaurants != null){
+                    //Like Restaurant
+                    likeRestaurant();
+
+                    for (String likedRestaurantId : likedRestaurants){
+                        if (likedRestaurantId.equals(restaurantId)){
+
+                            //Unlike Restaurant
+                            unlikeRestaurant();
+                        }
+                    }
+                } else {
+
+                    //Like Restaurant
+                    likeRestaurant();
+                }
+            });
+
+        });
+
     }
 
     private void getPlaceInfosFromId(String placeId) {
@@ -230,4 +263,39 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         });
     }
 
+    private void likeRestaurant(){
+        //Like Restaurant
+        btnLike.setText("Liked");
+        btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_filled, 0, 0);
+        FirebaseFirestore.getInstance().collection("Users")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .update("liked", FieldValue.arrayUnion(restaurantId));
+    }
+
+    private void unlikeRestaurant(){
+        //Unlike Restaurant
+        btnLike.setText("Like");
+        btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_unfilled, 0, 0);
+        FirebaseFirestore.getInstance().collection("Users")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .update("liked", FieldValue.arrayRemove(restaurantId));
+    }
+
+    private void initLikeButton() {
+        //Check if user already liked this restaurant
+        FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+            List<String> likedRestaurants = (List<String>) task.getResult().get("liked");
+            if (likedRestaurants != null){
+
+                for (String likedRestaurantId : likedRestaurants){
+                    if (likedRestaurantId.equals(restaurantId)){
+
+                        btnLike.setText("Liked");
+                        btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_filled, 0, 0);
+
+                    }
+                }
+            }
+        });
+    }
 }

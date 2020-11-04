@@ -86,8 +86,12 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
                         tvCell.setText(item.getFirstnameAndName() + " is eating at " + response.getPlace().getName());
                 }
             });
-        } else
-            tvCell.setText(item.getFirstnameAndName() + " hasn't decided yet");
+        } else {
+            if (item.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                tvCell.setText("You didn't decided yet");
+            else
+                tvCell.setText(item.getFirstnameAndName() + " hasn't decided yet");
+        }
 
 
         ivCell.setImageURI(item.getPhotoUrl());

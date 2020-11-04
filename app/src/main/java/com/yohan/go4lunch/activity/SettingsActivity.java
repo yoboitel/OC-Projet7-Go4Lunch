@@ -30,6 +30,8 @@ public class SettingsActivity extends AppCompatActivity {
             //Save when user quit the settings activity if needed
             if (temporarySwitchBoolean != valueFromFirestore){
 
+                Toast.makeText(SettingsActivity.this, "Saving...", Toast.LENGTH_SHORT).show();
+
                 Map<String, Object> data = new HashMap<>();
                 data.put("notificationActive", temporarySwitchBoolean);
 
@@ -42,7 +44,8 @@ public class SettingsActivity extends AppCompatActivity {
                         })
                         .addOnFailureListener(e -> Toast.makeText(getBaseContext(), "Failed", Toast.LENGTH_SHORT).show());
 
-            } else
+            }
+            else
                 //Leave Activity if no need to save
                 SettingsActivity.this.onBackPressed();
         });

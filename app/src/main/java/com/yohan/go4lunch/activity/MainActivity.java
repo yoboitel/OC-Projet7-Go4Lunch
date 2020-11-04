@@ -1,5 +1,7 @@
 package com.yohan.go4lunch.activity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -26,6 +28,10 @@ import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.fragment.FragmentList;
 import com.yohan.go4lunch.fragment.FragmentWorkmates;
 import com.yohan.go4lunch.fragment.FragmentMap;
+import com.yohan.go4lunch.notification.NotificationReceiver;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -41,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         Fresco.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
+
+        //Set Alarm For Daily Reminder Notification
+        setDailyNotification();
 
         //TOOLBAR
         toolbar = findViewById(R.id.activity_main_toolbar);
@@ -151,4 +160,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
+
+    public void setDailyNotification(){
+
+        //Set the Alarm at 12 in the afternoon
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 00);
+
+        //Today set time passed, count to tomorrow
+        if (calendar.getTime().compareTo(new Date()) < 0)
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        if (alarmManager != null) {
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        }
+
+    }
+
 }

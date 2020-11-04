@@ -56,6 +56,9 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
+            android:background="@drawable/background_white_rounded_card"
+            android:elevation="8dp"
+            android:padding="12dp"
             android:text="Enable reminder notification" />
 
     </LinearLayout>

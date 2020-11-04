@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +21,7 @@ import com.facebook.login.LoginManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.fragment.FragmentList;
 import com.yohan.go4lunch.fragment.FragmentWorkmates;
@@ -110,6 +113,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Handle Navigation Item Click
         switch (item.getItemId()){
             case R.id.drawer_lunch :
+                FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+                    String result = task.getResult().getString("choosedRestaurantId");
+                    if (result != null){
+                        Intent intent = new Intent(getBaseContext(), RestaurantDetailActivity.class);
+                        intent.putExtra("EXTRA_RESTAURANT_ID", result);
+                        startActivity(intent);
+                    } else
+                        Toast.makeText(this, "You didn't pick your restaurant yet", Toast.LENGTH_SHORT).show();
+                });
                 break;
             case R.id.drawer_settings:
                 //Start settings activity

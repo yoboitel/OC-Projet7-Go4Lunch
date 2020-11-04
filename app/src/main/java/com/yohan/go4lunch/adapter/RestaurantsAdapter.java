@@ -12,10 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.model.Restaurant;
+import com.yohan.go4lunch.model.User;
+
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -80,6 +86,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         TextView tvRestaurantOpeningHour = holder.itemView.findViewById(R.id.tvListRestaurantOpeningHours);
         TextView tvRestaurantDistance = holder.itemView.findViewById(R.id.tvListRestaurantDistance);
         ImageView ivRestaurantPhoto = holder.itemView.findViewById(R.id.ivListRestaurantPhoto);
+        TextView tvRestaurantParticipants = holder.itemView.findViewById(R.id.tvListRestaurantNbPeopleEating);
 
         //Display Restaurant Name
         tvRestaurantName.setText(item.getName());
@@ -116,9 +123,11 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                 ivRestaurantPhoto.setImageBitmap(bitmap);
             });
         } else{
-            ivRestaurantPhoto.setImageResource(R.drawable.btn_google_background);
+            ivRestaurantPhoto.setImageResource(R.drawable.ic_no_photo);
         }
 
+        //Display Restaurant Participants Count
+        displayParticipantsCountFromFirestore(item.getId(), tvRestaurantParticipants);
     }
 
     @Override
@@ -143,6 +152,26 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             dayOfWeek = dayOfWeek - 2;
         }
         return dayOfWeek;
+    }
+
+    //Count number of participants for each restaurant
+    private void displayParticipantsCountFromFirestore(String restaurantId, TextView tvParticipantsCount) {
+
+        final Integer[] participantsCount = {0};
+
+        FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task -> {
+            for (DocumentSnapshot querySnapshot: task.getResult()){
+
+                String restaurant = querySnapshot.getString("choosedRestaurantId");
+                if (restaurant != null) {
+                    if (restaurant.equals(restaurantId)) {
+
+                        participantsCount[0]++;
+                        tvParticipantsCount.setText("(" + participantsCount[0] + ")");
+                    }
+                }
+            }
+        });
     }
 
 }

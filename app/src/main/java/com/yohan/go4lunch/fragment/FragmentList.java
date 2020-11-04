@@ -1,6 +1,7 @@
 package com.yohan.go4lunch.fragment;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.yohan.go4lunch.BuildConfig;
 import com.yohan.go4lunch.R;
+import com.yohan.go4lunch.activity.RestaurantDetailActivity;
 import com.yohan.go4lunch.adapter.RestaurantsAdapter;
 import com.yohan.go4lunch.model.Restaurant;
 import java.util.ArrayList;
@@ -70,7 +72,10 @@ public class FragmentList extends Fragment {
         mAdapter = new RestaurantsAdapter(requireContext(), mRestaurantList, new RestaurantsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Toast.makeText(FragmentList.this.requireContext(), "Start RestaurantDetail Activity", Toast.LENGTH_SHORT).show();
+                //Start Restaurant Detail Activity sending the Restaurant Id in Extra
+                Intent intent = new Intent(requireContext(), RestaurantDetailActivity.class);
+                intent.putExtra("EXTRA_RESTAURANT_ID", mRestaurantList.get(position).getId());
+                startActivity(intent);
             }
         });
         mRecyclerView.setHasFixedSize(true);
@@ -148,7 +153,6 @@ public class FragmentList extends Fragment {
             } else {
                 photos = mPlace.getPhotoMetadatas().get(0);
             }
-
 
             restaurantList.add(new Restaurant(placeId, placeName, address, openingHours, latLng, placeDistance, rating, photos));
             mAdapter.notifyDataSetChanged();

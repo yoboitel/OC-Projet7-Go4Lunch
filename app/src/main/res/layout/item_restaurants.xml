@@ -30,7 +30,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
                     android:gravity="center_vertical"
-                    android:text="Le Zinc"
+                    android:text="Name"
                     android:textColor="@color/colorPrimaryDark"
                     android:textStyle="bold" />
 
@@ -41,7 +41,7 @@
                     android:layout_gravity="end"
                     android:layout_weight="0.8"
                     android:gravity="center_vertical"
-                    android:text="120m" />
+                    android:text="0m" />
             </LinearLayout>
 
             <LinearLayout
@@ -56,15 +56,15 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
                     android:gravity="center_vertical"
-                    android:text="12 rue du Faubourg Poissonière" />
+                    android:text="Address" />
 
                 <TextView
                     android:id="@+id/tvListRestaurantNbPeopleEating"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="0.8"
-                    android:gravity="center_vertical"
-                    android:text="Pers(2)" />
+                    android:drawableStart="@drawable/ic_outline_person_24"
+                    android:gravity="center_vertical" />
             </LinearLayout>
 
             <LinearLayout
@@ -79,7 +79,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
                     android:gravity="center_vertical"
-                    android:text="Open until 7pm"
+                    android:text="Opening hours"
                     android:textStyle="italic" />
 
                 <ImageView

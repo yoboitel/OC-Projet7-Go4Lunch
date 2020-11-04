@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.model.User;
 
@@ -154,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
 
         User newUser = new User(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString() ,null, true);
-        FirebaseFirestore.getInstance().collection("Users").document(user.getUid()).set(newUser).addOnSuccessListener(aVoid -> startActivity(new Intent(LoginActivity.this, MainActivity.class))).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "User Creation Failed", Toast.LENGTH_SHORT).show());
+        FirebaseFirestore.getInstance().collection("Users").document(user.getUid()).set(newUser, SetOptions.merge()).addOnSuccessListener(aVoid -> startActivity(new Intent(LoginActivity.this, MainActivity.class))).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "User Creation Failed", Toast.LENGTH_SHORT).show());
     }
 
 }

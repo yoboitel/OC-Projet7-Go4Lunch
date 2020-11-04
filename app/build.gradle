@@ -6,6 +6,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         applicationId "com.yohan.go4lunch"
         minSdkVersion 19
         targetSdkVersion 29

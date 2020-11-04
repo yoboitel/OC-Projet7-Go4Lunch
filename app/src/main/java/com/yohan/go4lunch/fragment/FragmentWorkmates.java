@@ -1,5 +1,6 @@
 package com.yohan.go4lunch.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.yohan.go4lunch.R;
+import com.yohan.go4lunch.activity.RestaurantDetailActivity;
 import com.yohan.go4lunch.adapter.WorkmatesAdapter;
 import com.yohan.go4lunch.model.User;
 import java.util.ArrayList;
@@ -51,8 +53,7 @@ public class FragmentWorkmates extends Fragment {
         if(workmatesList.size()>0)
             workmatesList.clear();
 
-        Query workmatesQuery = FirebaseFirestore.getInstance().collection("Users");
-        workmatesQuery.get().addOnCompleteListener(task -> {
+        FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task -> {
             for (DocumentSnapshot querySnapshot: task.getResult()){
 
                 //For each users document found in firestore, create a user object with its info and add it in the list.
@@ -66,10 +67,15 @@ public class FragmentWorkmates extends Fragment {
                 workmatesList.add(user);
             }
 
-            workmatesAdapter = new WorkmatesAdapter(requireContext(), workmatesList, new WorkmatesAdapter.OnItemClickListener() {
+            workmatesAdapter = new WorkmatesAdapter(requireContext(), workmatesList, null, new WorkmatesAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(int position) {
-                    Toast.makeText(FragmentWorkmates.this.requireContext(), "Open Detailed Activity for restaurant choosed by " + workmatesList.get(position).getFirstnameAndName(), Toast.LENGTH_SHORT).show();
+                    //Start Restaurant Detail Activity sending the Restaurant Id in Extra
+                    if (workmatesList.get(position).getChoosedRestaurantId() != null){
+                        Intent intent = new Intent(requireContext(), RestaurantDetailActivity.class);
+                        intent.putExtra("EXTRA_RESTAURANT_ID", workmatesList.get(position).getChoosedRestaurantId());
+                        startActivity(intent);
+                    }
                 }
             });
             rcWorkmates.setAdapter(workmatesAdapter);

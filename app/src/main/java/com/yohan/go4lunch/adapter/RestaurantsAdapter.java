@@ -169,6 +169,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
                         participantsCount[0]++;
                         tvParticipantsCount.setText("(" + participantsCount[0] + ")");
+                        tvParticipantsCount.setVisibility(View.VISIBLE);
                     }
                 }
             }

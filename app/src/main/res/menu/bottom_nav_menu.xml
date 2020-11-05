@@ -16,4 +16,10 @@
         android:icon="@drawable/navbar_workmates"
         android:title="@string/navbar_workmates" />
 
+    <item
+        android:id="@+id/navigation_chat"
+        android:icon="@drawable/navbar_chat"
+        android:title="@string/navbar_chat" />
+
+
 </menu>

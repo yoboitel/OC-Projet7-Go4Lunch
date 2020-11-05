@@ -23,5 +23,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="toolbar_first_title">I\'m Hungry!</string>
     <string name="toolbar_second_title">Available workmates</string>
+    <string name="navbar_chat">Chat</string>
 
 </resources>

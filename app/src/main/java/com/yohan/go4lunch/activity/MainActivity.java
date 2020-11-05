@@ -25,6 +25,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.yohan.go4lunch.R;
+import com.yohan.go4lunch.fragment.FragmentChat;
 import com.yohan.go4lunch.fragment.FragmentList;
 import com.yohan.go4lunch.fragment.FragmentWorkmates;
 import com.yohan.go4lunch.fragment.FragmentMap;
@@ -90,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case R.id.navigation_workmates:
                     toolbar.setTitle(R.string.toolbar_second_title);
                     MainActivity.this.displayFragment(new FragmentWorkmates());
+                    return true;
+                case R.id.navigation_chat:
+                    toolbar.setTitle(R.string.navbar_chat);
+                    MainActivity.this.displayFragment(new FragmentChat());
                     return true;
             }
             return false;

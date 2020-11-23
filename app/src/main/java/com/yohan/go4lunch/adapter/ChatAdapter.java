@@ -48,18 +48,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         Message item = list.get(position);
 
-        //Display messages on Right or Left depending if it's from the connected user or not
-        LinearLayout linearItemMessage = holder.itemView.findViewById(R.id.linearItemMessage);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams. MATCH_PARENT , ViewGroup.LayoutParams.WRAP_CONTENT ) ;
-        if (item.getAuthorUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-            //bubble on right
-            layoutParams.setMargins( 200 , 15 , 15 , 15 ) ;
-        } else {
-            //bubble on right
-            layoutParams.setMargins( 15 , 15 , 200 , 15 ) ;
-        }
-        linearItemMessage.setLayoutParams(layoutParams);
-
         //Setup Views
         TextView messageContent = holder.itemView.findViewById(R.id.messageContent);
         TextView messageName = holder.itemView.findViewById(R.id.messageName);
@@ -68,6 +56,21 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         messageContent.setText(item.getMessage());
         messageName.setText(item.getAuthorName());
         ivAuthorPhoto.setImageURI(item.getAuthorPhotoUrl());
+
+        //Display messages on Right or Left depending if it's from the connected user or not
+        LinearLayout linearItemMessage = holder.itemView.findViewById(R.id.linearItemMessage);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams. MATCH_PARENT , ViewGroup.LayoutParams.WRAP_CONTENT ) ;
+        if (item.getAuthorUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+            //bubble on right
+            layoutParams.setMargins( 300 , 15 , 15 , 15 ) ;
+            linearItemMessage.setBackground(context.getResources().getDrawable(R.drawable.message_bubble_sent));
+            messageName.setText("You");
+        } else {
+            //bubble on left
+            layoutParams.setMargins( 15 , 15 , 300 , 15 ) ;
+            linearItemMessage.setBackground(context.getResources().getDrawable(R.drawable.message_bubble_received));
+        }
+        linearItemMessage.setLayoutParams(layoutParams);
     }
 
     @Override

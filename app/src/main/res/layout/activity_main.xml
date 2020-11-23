@@ -53,7 +53,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 android:theme="@style/ToolBarStyle"
-                app:title="@string/toolbar_first_title" />
+                app:title="@string/toolbar_first_title"/>
 
         </com.google.android.material.appbar.AppBarLayout>
 

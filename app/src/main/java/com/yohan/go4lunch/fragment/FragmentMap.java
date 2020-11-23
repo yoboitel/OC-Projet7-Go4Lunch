@@ -5,15 +5,19 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.gms.common.api.ApiException;
@@ -28,8 +32,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.OpeningHours;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -38,6 +49,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.yohan.go4lunch.BuildConfig;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.activity.RestaurantDetailActivity;
+import com.yohan.go4lunch.model.Restaurant;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -50,13 +62,12 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
     private GoogleMap gMap;
     private FusedLocationProviderClient fusedLocationClient;
     private int ZOOM_LEVEL = 15; //This goes up to 21
-
     private PlacesClient mPlacesClient;
+    private Location mLastKnownLocation;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap googleMap) {
-
 
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
             gMap = googleMap;
@@ -75,6 +86,9 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
             //Permission is granted so retrieve the user's last position
             fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null) {
+
+                    mLastKnownLocation = location;
+
                     gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), ZOOM_LEVEL));
                     gMap.setMyLocationEnabled(true);
                     gMap.setOnMarkerClickListener(this);
@@ -161,6 +175,12 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
         }
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -199,4 +219,70 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
 
         return false;
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate( R.menu.search_menu, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                if (mLastKnownLocation != null) {
+
+                    // Create a RectangularBounds object from 2 points around user location, southwest coordinates and northeast coordinates.
+                    RectangularBounds bounds = RectangularBounds.newInstance(new LatLng(mLastKnownLocation.getLatitude() - 0.003, mLastKnownLocation.getLongitude() - 0.01), new LatLng(mLastKnownLocation.getLatitude() + 0.003, mLastKnownLocation.getLongitude() + 0.01));
+
+                    // Use the builder to create a FindAutocompletePredictionsRequest.
+                    FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                            .setLocationRestriction(bounds)
+                            .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                            .setQuery(newText)
+                            .build();
+
+                    mPlacesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
+                        for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+
+                            gMap.clear();
+                            getPlaceLocationFromIdAndPlaceMarker(prediction);
+
+                        }
+                    }).addOnFailureListener((exception) -> {
+                        if (exception instanceof ApiException) {
+                            ApiException apiException = (ApiException) exception;
+                            Toast.makeText(requireContext(), apiException.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(requireContext(), "LastKnowPosition is null", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        });
+    }
+
+    private void getPlaceLocationFromIdAndPlaceMarker(AutocompletePrediction prediction) {
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME);
+        FetchPlaceRequest request = FetchPlaceRequest.newInstance(prediction.getPlaceId(), placeFields);
+
+        mPlacesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+            Place mPlace = response.getPlace();
+            LatLng latLng = mPlace.getLatLng();
+
+            //Refresh the Map with the autocomplete predictions list pins
+            gMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latLng.latitude, latLng.longitude))
+                    .title(mPlace.getName())
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("ic_marker_orange",100,135))))
+                    .setTag(prediction.getPlaceId());
+        });
+    }
+
 }

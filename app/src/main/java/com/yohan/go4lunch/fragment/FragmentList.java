@@ -7,9 +7,15 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,12 +24,18 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.OpeningHours;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -53,6 +65,7 @@ public class FragmentList extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -65,7 +78,6 @@ public class FragmentList extends Fragment {
         mPlacesClient = com.google.android.libraries.places.api.Places.createClient(requireContext());
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-        getDeviceLocation();
 
         mRestaurantList = new ArrayList<>();
         mRecyclerView = v.findViewById(R.id.rcRestaurants);
@@ -166,5 +178,52 @@ public class FragmentList extends Fragment {
 
         float distance =  targetLocation.distanceTo(mLastKnownLocation);
         return (int)distance + "m";
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate( R.menu.search_menu, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                
+                if (mLastKnownLocation != null) {
+
+                    // Create a RectangularBounds object from 2 points, southwest coordinates and northeast coordinates.
+                    RectangularBounds bounds = RectangularBounds.newInstance(new LatLng(mLastKnownLocation.getLatitude() - 0.003, mLastKnownLocation.getLongitude() - 0.01), new LatLng(mLastKnownLocation.getLatitude() + 0.003, mLastKnownLocation.getLongitude() + 0.01));
+
+                    // Use the builder to create a FindAutocompletePredictionsRequest.
+                    FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                            .setLocationRestriction(bounds)
+                            .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                            .setQuery(newText)
+                            .build();
+
+                    mPlacesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
+                        for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                            //Refresh the recyclerview with the autocomplete predictions list at each text change
+                            mRestaurantList.clear();
+                            getPlaceInfosFromId(prediction.getPlaceId(), mRestaurantList);
+                        }
+                    }).addOnFailureListener((exception) -> {
+                        if (exception instanceof ApiException) {
+                            ApiException apiException = (ApiException) exception;
+                            Toast.makeText(requireContext(), apiException.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(requireContext(), "LastKnowPosition is null", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        });
     }
 }

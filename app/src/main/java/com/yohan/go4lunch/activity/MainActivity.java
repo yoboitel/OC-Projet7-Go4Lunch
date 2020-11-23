@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +29,6 @@ import com.yohan.go4lunch.fragment.FragmentList;
 import com.yohan.go4lunch.fragment.FragmentWorkmates;
 import com.yohan.go4lunch.fragment.FragmentMap;
 import com.yohan.go4lunch.notification.NotificationReceiver;
-
 import java.util.Calendar;
 import java.util.Date;
 
@@ -186,5 +184,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
     }
-
 }

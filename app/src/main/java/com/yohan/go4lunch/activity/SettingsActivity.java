@@ -3,13 +3,16 @@ package com.yohan.go4lunch.activity;
 import android.os.Bundle;
 import android.widget.Switch;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.yohan.go4lunch.R;
+
 import java.util.HashMap;
 import java.util.Map;
 

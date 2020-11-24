@@ -11,12 +11,14 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -39,6 +41,7 @@ import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.activity.RestaurantDetailActivity;
 import com.yohan.go4lunch.adapter.RestaurantsAdapter;
 import com.yohan.go4lunch.model.Restaurant;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

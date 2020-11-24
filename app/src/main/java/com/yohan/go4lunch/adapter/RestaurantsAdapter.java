@@ -7,7 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -15,7 +17,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.model.Restaurant;
+
 import org.jetbrains.annotations.NotNull;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;

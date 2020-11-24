@@ -9,10 +9,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
@@ -26,6 +28,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.adapter.WorkmatesAdapter;
 import com.yohan.go4lunch.model.User;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

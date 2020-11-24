@@ -2,47 +2,36 @@ package com.yohan.go4lunch.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.adapter.WorkmatesAdapter;
-import com.yohan.go4lunch.fragment.FragmentWorkmates;
 import com.yohan.go4lunch.model.User;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class RestaurantDetailActivity extends AppCompatActivity {
 
@@ -86,27 +75,34 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         loadParticipantsFromFirestore();
 
         //Init FAB with right image ressource
-        FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-            String result = task.getResult().getString("choosedRestaurantId");
-            if (result != null){
-                if (result.equals(restaurantId))
-                    fabGoToRestaurant.setImageResource(R.drawable.ic_check_activated);
-            }
-        });
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+
+            FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+
+                if (task.getResult() != null) {
+                    String result = task.getResult().getString("choosedRestaurantId");
+                    if (result != null) {
+                        if (result.equals(restaurantId))
+                            fabGoToRestaurant.setImageResource(R.drawable.ic_check_activated);
+                    }
+                }
+            });
+        }
 
         //Handle click on FAB
         fabGoToRestaurant.setOnClickListener(view -> {
 
             //Check if user already choosed a restaurant
             FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-                String result = task.getResult().getString("choosedRestaurantId");
-                if (result != null){
-                    if (result.equals(restaurantId))
-                        goToThisRestaurant(false);
-                    else
+
+                if (task.getResult() != null) {
+                    String result = task.getResult().getString("choosedRestaurantId");
+
+                    if (result == null || !result.equals(restaurantId))
                         goToThisRestaurant(true);
-                } else{
-                    goToThisRestaurant(true);
+                    else
+                        goToThisRestaurant(false);
                 }
             });
         });
@@ -118,11 +114,11 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
             //Check if user already liked this restaurant
             FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-                List<String> likedRestaurants = (List<String>) task.getResult().get("liked");
+                @SuppressWarnings("unchecked")
+                List<String> likedRestaurants = (List<String>) Objects.requireNonNull(task.getResult()).get("liked");
+                likeRestaurant();
                 if (likedRestaurants != null){
                     //Like Restaurant
-                    likeRestaurant();
-
                     for (String likedRestaurantId : likedRestaurants){
                         if (likedRestaurantId.equals(restaurantId)){
 
@@ -130,13 +126,8 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                             unlikeRestaurant();
                         }
                     }
-                } else {
-
-                    //Like Restaurant
-                    likeRestaurant();
                 }
             });
-
         });
 
     }
@@ -191,9 +182,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             btnPhone.setVisibility(View.GONE);
         //Set website
         if (mPlace.getWebsiteUri() != null) {
-            btnWebsite.setOnClickListener(view -> {
-                startActivity(new Intent(Intent.ACTION_VIEW,mPlace.getWebsiteUri()));
-            });
+            btnWebsite.setOnClickListener(view -> startActivity(new Intent(Intent.ACTION_VIEW,mPlace.getWebsiteUri())));
         } else
             btnWebsite.setVisibility(View.GONE);
     }
@@ -210,20 +199,16 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             data.put("choosedRestaurantId", null);
             drawable = R.drawable.ic_check_desactivated;
         }
-        FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).set(data, SetOptions.merge())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).set(data, SetOptions.merge())
+                    .addOnSuccessListener(aVoid -> {
                         fabGoToRestaurant.setImageResource(drawable);
                         loadParticipantsFromFirestore();
-                    }})
-                .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(RestaurantDetailActivity.this.getBaseContext(), "Failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-        );
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(RestaurantDetailActivity.this.getBaseContext(), getString(R.string.firestore_fail_message) + e, Toast.LENGTH_SHORT).show()
+                    );
+        }
     }
 
     private void loadParticipantsFromFirestore() {
@@ -232,31 +217,33 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             participantsList.clear();
 
         FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task -> {
-            for (DocumentSnapshot querySnapshot: task.getResult()){
 
-                String restaurant = querySnapshot.getString("choosedRestaurantId");
-                if (restaurant != null) {
-                    if (restaurant.equals(restaurantId)) {
+            if (task.getResult() != null) {
 
-                        //For each users that goes to this restaurant ,create a user object with its info and add it in the list.
-                        User user = new User(
-                                querySnapshot.getString("uid"),
-                                querySnapshot.getString("firstnameAndName"),
-                                querySnapshot.getString("photoUrl"),
-                                querySnapshot.getString("choosedRestaurantId"),
-                                querySnapshot.getBoolean("notificationActive"));
+                for (DocumentSnapshot querySnapshot : task.getResult()) {
 
-                        participantsList.add(user);
+                    String restaurant = querySnapshot.getString("choosedRestaurantId");
+                    if (restaurant != null) {
+                        if (restaurant.equals(restaurantId)) {
 
+                            //For each users that goes to this restaurant ,create a user object with its info and add it in the list.
+                            User user = new User(
+                                    querySnapshot.getString("uid"),
+                                    querySnapshot.getString("firstnameAndName"),
+                                    querySnapshot.getString("photoUrl"),
+                                    querySnapshot.getString("choosedRestaurantId"),
+                                    querySnapshot.getBoolean("notificationActive"));
+
+                            participantsList.add(user);
+
+                        }
                     }
                 }
+
             }
 
-            participantsAdapter = new WorkmatesAdapter(getBaseContext(), participantsList, restaurantId, new WorkmatesAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position) {
-                    //Do nothing
-                }
+            participantsAdapter = new WorkmatesAdapter(getBaseContext(), participantsList, restaurantId, position -> {
+                //Do nothing
             });
             rcParticipants.setAdapter(participantsAdapter);
             participantsAdapter.notifyDataSetChanged();
@@ -265,32 +252,33 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     private void likeRestaurant(){
         //Like Restaurant
-        btnLike.setText("Liked");
+        btnLike.setText(R.string.liked);
         btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_filled, 0, 0);
         FirebaseFirestore.getInstance().collection("Users")
-                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
                 .update("liked", FieldValue.arrayUnion(restaurantId));
     }
 
     private void unlikeRestaurant(){
         //Unlike Restaurant
-        btnLike.setText("Like");
+        btnLike.setText(R.string.like);
         btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_unfilled, 0, 0);
         FirebaseFirestore.getInstance().collection("Users")
-                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
                 .update("liked", FieldValue.arrayRemove(restaurantId));
     }
 
     private void initLikeButton() {
         //Check if user already liked this restaurant
-        FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-            List<String> likedRestaurants = (List<String>) task.getResult().get("liked");
+        FirebaseFirestore.getInstance().collection("Users").document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).get().addOnCompleteListener(task -> {
+            @SuppressWarnings("unchecked")
+            List<String> likedRestaurants = (List<String>) Objects.requireNonNull(task.getResult()).get("liked");
             if (likedRestaurants != null){
 
                 for (String likedRestaurantId : likedRestaurants){
                     if (likedRestaurantId.equals(restaurantId)){
 
-                        btnLike.setText("Liked");
+                        btnLike.setText(R.string.liked);
                         btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_filled, 0, 0);
 
                     }

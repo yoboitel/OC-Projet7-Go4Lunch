@@ -34,12 +34,9 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private SimpleDraweeView profilePicture;
-    private TextView drawerTvName, drawerTvEmail;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void bottomNavBarFragmentsManagement() {
-        bottomNavigationView = findViewById(R.id.navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_map:
@@ -101,15 +98,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void loadDataInHeader() {
         View headerView = navigationView.getHeaderView(0);
-        //Profile picture
-        profilePicture = headerView.findViewById(R.id.drawerIvProfilePicture);
-        profilePicture.setImageURI(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
-        //Name
-        drawerTvName = headerView.findViewById(R.id.drawerTvName);
-        drawerTvName.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-        //Email
-        drawerTvEmail = headerView.findViewById(R.id.drawerTvEmail);
-        drawerTvEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+
+            //Profile picture
+            SimpleDraweeView profilePicture = headerView.findViewById(R.id.drawerIvProfilePicture);
+            profilePicture.setImageURI(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
+            //Name
+            TextView drawerTvName = headerView.findViewById(R.id.drawerTvName);
+            drawerTvName.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+            //Email
+            TextView drawerTvEmail = headerView.findViewById(R.id.drawerTvEmail);
+            drawerTvEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
+        }
     }
 
     private void displayFragment(Fragment fragment) {
@@ -125,15 +127,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Handle Navigation Item Click
         switch (item.getItemId()){
             case R.id.drawer_lunch :
-                FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-                    String result = task.getResult().getString("choosedRestaurantId");
-                    if (result != null){
-                        Intent intent = new Intent(getBaseContext(), RestaurantDetailActivity.class);
-                        intent.putExtra("EXTRA_RESTAURANT_ID", result);
-                        startActivity(intent);
-                    } else
-                        Toast.makeText(this, "You didn't pick your restaurant yet", Toast.LENGTH_SHORT).show();
-                });
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                    FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+                        if (task.getResult() != null) {
+                            String result = task.getResult().getString("choosedRestaurantId");
+                            if (result != null) {
+                                Intent intent = new Intent(getBaseContext(), RestaurantDetailActivity.class);
+                                intent.putExtra("EXTRA_RESTAURANT_ID", result);
+                                startActivity(intent);
+                            } else
+                                Toast.makeText(this, R.string.you_didnt_decided_yet, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
                 break;
             case R.id.drawer_settings:
                 //Start settings activity
@@ -169,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Set the Alarm at 12 in the afternoon
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 00);
+        calendar.set(Calendar.MINUTE, 0);
 
         //Today set time passed, count to tomorrow
         if (calendar.getTime().compareTo(new Date()) < 0)

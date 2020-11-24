@@ -4,7 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 import com.facebook.AccessToken;
@@ -74,12 +73,10 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancel() {
-                    Log.d("FBAUTH", "facebook:onCancel");
                 }
 
                 @Override
                 public void onError(FacebookException error) {
-                    Log.d("FBAUTH", "facebook:onError", error);
                 }
             });
         });
@@ -119,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (account != null)
                     firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
-                Log.w("GOOGLEAUTH", "Google sign in failed", e);
+                //
             }
         }
     }
@@ -132,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         createUserInFirestore();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, R.string.toast_failed_auth, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -145,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         createUserInFirestore();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, R.string.toast_failed_auth, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -153,9 +150,10 @@ public class LoginActivity extends AppCompatActivity {
     private void createUserInFirestore(){
 
         FirebaseUser user = mAuth.getCurrentUser();
-
-        User newUser = new User(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString() ,null, true);
-        FirebaseFirestore.getInstance().collection("Users").document(user.getUid()).set(newUser, SetOptions.merge()).addOnSuccessListener(aVoid -> startActivity(new Intent(LoginActivity.this, MainActivity.class))).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "User Creation Failed", Toast.LENGTH_SHORT).show());
-    }
+            if (user != null) {
+                User newUser = new User(user.getUid(), user.getDisplayName(), user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null, null, true);
+                FirebaseFirestore.getInstance().collection("Users").document(user.getUid()).set(newUser, SetOptions.merge()).addOnSuccessListener(aVoid -> startActivity(new Intent(LoginActivity.this, MainActivity.class))).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, R.string.toast_failed_usercreation, Toast.LENGTH_SHORT).show());
+            }
+        }
 
 }

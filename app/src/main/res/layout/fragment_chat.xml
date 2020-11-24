@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline4"
@@ -39,7 +38,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline4">
+        app:layout_constraintTop_toTopOf="@+id/guideline4"
+        tools:ignore="UnusedAttribute">
 
         <EditText
             android:id="@+id/etMessage"
@@ -48,9 +48,11 @@
             android:layout_weight="0.2"
             android:background="@null"
             android:ems="10"
-            android:hint="Your message..."
+            android:hint="@string/edittext_message_hint"
             android:inputType="textPersonName"
-            android:paddingStart="8dp" />
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            tools:ignore="Autofill" />
 
         <ImageButton
             android:id="@+id/ivSend"
@@ -58,6 +60,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.8"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_send" />
+            app:srcCompat="@drawable/ic_send"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

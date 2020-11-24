@@ -6,9 +6,9 @@ public class User {
     private String firstnameAndName;
     private String photoUrl;
     private String choosedRestaurantId;
-    private boolean notificationActive;
+    private Boolean notificationActive;
 
-    public User(String uid, String firstnameAndName, String photoUrl, String choosedRestaurantId, boolean notificationActive) {
+    public User(String uid, String firstnameAndName, String photoUrl, String choosedRestaurantId, Boolean notificationActive) {
         this.uid = uid;
         this.firstnameAndName = firstnameAndName;
         this.photoUrl = photoUrl;
@@ -48,11 +48,11 @@ public class User {
         this.choosedRestaurantId = choosedRestaurantId;
     }
 
-    public boolean isNotificationActive() {
+    public Boolean isNotificationActive() {
         return notificationActive;
     }
 
-    public void setNotificationActive(boolean notificationActive) {
+    public void setNotificationActive(Boolean notificationActive) {
         this.notificationActive = notificationActive;
     }
 

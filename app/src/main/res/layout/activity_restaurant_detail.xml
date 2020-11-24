@@ -45,13 +45,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        tools:srcCompat="@tools:sample/backgrounds/scenic"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabDetailSelected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
+        android:focusable="true"
         app:backgroundTint="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +80,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/tvDetailName"
             app:layout_constraintStart_toEndOf="@+id/tvDetailName"
             app:layout_constraintTop_toTopOf="@+id/tvDetailName"
-            app:srcCompat="@drawable/stars3" />
+            app:srcCompat="@drawable/stars3"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/tvDetailName"
@@ -86,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:gravity="center_vertical"
-            android:text="Name"
+            android:text="@string/detail_name_placeholder"
             android:textColor="@android:color/white"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -99,7 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Address"
+            android:text="@string/detail_address_placeholder"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -122,7 +125,8 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline">
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/btnDetailCall"
@@ -132,8 +136,9 @@
             android:background="@android:color/white"
             android:drawableTop="@drawable/ic_call"
             android:paddingTop="15dp"
-            android:text="Call"
-            android:textColor="@color/colorPrimary" />
+            android:text="@string/detail_call_placeholder"
+            android:textColor="@color/colorPrimary"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:id="@+id/btnDetailLike"
@@ -143,8 +148,9 @@
             android:background="@android:color/white"
             android:drawableTop="@drawable/ic_star_unfilled"
             android:paddingTop="15dp"
-            android:text="Like"
-            android:textColor="@color/colorPrimary" />
+            android:text="@string/like"
+            android:textColor="@color/colorPrimary"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:id="@+id/btnDetailWebsite"
@@ -154,8 +160,9 @@
             android:background="@android:color/white"
             android:drawableTop="@drawable/ic_earth"
             android:paddingTop="15dp"
-            android:text="website"
-            android:textColor="@color/colorPrimary" />
+            android:text="@string/detail_website_placeholder"
+            android:textColor="@color/colorPrimary"
+            style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

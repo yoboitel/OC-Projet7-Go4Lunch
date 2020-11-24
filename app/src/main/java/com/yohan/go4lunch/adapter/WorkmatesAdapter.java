@@ -10,7 +10,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.model.User;
 
@@ -21,10 +20,10 @@ import java.util.List;
 
 public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.ViewHolder> {
 
-    private Context context;
-    private List<User> list;
-    private OnItemClickListener onItemClickListener;
-    private String restaurantId;
+    private final Context context;
+    private final List<User> list;
+    private final OnItemClickListener onItemClickListener;
+    private final String restaurantId;
 
     public WorkmatesAdapter(Context context, List<User> list, String restaurantId, OnItemClickListener onItemClickListener) {
         this.context = context;
@@ -67,32 +66,34 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
         TextView tvCell = holder.itemView.findViewById(R.id.itemWorkmatesTv);
         SimpleDraweeView ivCell = holder.itemView.findViewById(R.id.ivListRestaurantPreview);
 
-        if (item.getChoosedRestaurantId() != null) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 
-            //Request detail to get restaurant name
-            List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
-            FetchPlaceRequest request = FetchPlaceRequest.newInstance(item.getChoosedRestaurantId(), placeFields);
-            com.google.android.libraries.places.api.Places.createClient(context).fetchPlace(request).addOnSuccessListener((response) -> {
-                //SET INFOS//
-                if (item.getChoosedRestaurantId().equals(restaurantId))
-                    if (item.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
-                        tvCell.setText("You are joining !");
-                    else
-                        tvCell.setText(item.getFirstnameAndName() + " is joining !");
-                else {
-                    if (item.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
-                        tvCell.setText("You are eating at " + response.getPlace().getName());
-                    else
-                        tvCell.setText(item.getFirstnameAndName() + " is eating at " + response.getPlace().getName());
-                }
-            });
-        } else {
-            if (item.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
-                tvCell.setText("You didn't decided yet");
-            else
-                tvCell.setText(item.getFirstnameAndName() + " hasn't decided yet");
+            if (item.getChoosedRestaurantId() != null) {
+                //Request detail to get restaurant name
+                List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+                FetchPlaceRequest request = FetchPlaceRequest.newInstance(item.getChoosedRestaurantId(), placeFields);
+                com.google.android.libraries.places.api.Places.createClient(context).fetchPlace(request).addOnSuccessListener((response) -> {
+                    //SET INFOS//
+                    if (item.getChoosedRestaurantId().equals(restaurantId))
+                        if (item.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                            tvCell.setText(R.string.you_are_joining);
+                        else
+                            tvCell.setText(String.format(context.getString(R.string.workmate_joining), item.getFirstnameAndName()));
+                    else {
+                        if (item.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                            tvCell.setText(String.format(context.getString(R.string.you_are_eating_at), response.getPlace().getName()));
+                        else
+                            tvCell.setText(String.format(context.getString(R.string.workmate_eating), item.getFirstnameAndName(), response.getPlace().getName()));
+                    }
+                });
+            } else {
+                if (item.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                    tvCell.setText(R.string.you_didnt_decided_yet);
+                else
+                    tvCell.setText(String.format(context.getString(R.string.workmate_not_decided), item.getFirstnameAndName()));
+            }
+
         }
-
 
         ivCell.setImageURI(item.getPhotoUrl());
     }

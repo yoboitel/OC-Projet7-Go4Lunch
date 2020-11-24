@@ -30,20 +30,21 @@ public class SettingsActivity extends AppCompatActivity {
             //Save when user quit the settings activity if needed
             if (temporarySwitchBoolean != valueFromFirestore){
 
-                Toast.makeText(SettingsActivity.this, "Saving...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SettingsActivity.this, R.string.settings_saving, Toast.LENGTH_SHORT).show();
 
                 Map<String, Object> data = new HashMap<>();
                 data.put("notificationActive", temporarySwitchBoolean);
 
-                //Save in Firestore
-                FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).set(data, SetOptions.merge())
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(SettingsActivity.this, "Settings Saved", Toast.LENGTH_SHORT).show();
-                            //Leave Activity when saving is finished
-                            SettingsActivity.this.onBackPressed();
-                        })
-                        .addOnFailureListener(e -> Toast.makeText(getBaseContext(), "Failed", Toast.LENGTH_SHORT).show());
-
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                    //Save in Firestore
+                    FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).set(data, SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(SettingsActivity.this, R.string.settings_saved, Toast.LENGTH_SHORT).show();
+                                //Leave Activity when saving is finished
+                                SettingsActivity.this.onBackPressed();
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(getBaseContext(), getString(R.string.firestore_fail_message) + e, Toast.LENGTH_SHORT).show());
+                }
             }
             else
                 //Leave Activity if no need to save
@@ -53,25 +54,29 @@ public class SettingsActivity extends AppCompatActivity {
         switchNotification = findViewById(R.id.switchNotif);
         //Init Switch State
         initSwitchStateFromFirestore();
-        switchNotification.setOnCheckedChangeListener((compoundButton, b) -> {
-
-            temporarySwitchBoolean = b;
-
-        });
+        switchNotification.setOnCheckedChangeListener((compoundButton, b) -> temporarySwitchBoolean = b);
     }
 
     private void initSwitchStateFromFirestore() {
-        FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-            Boolean isNotifActive = (Boolean) task.getResult().get("notificationActive");
 
-            if (isNotifActive != null){
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 
-                //Check or Uncheck switch if notification are enabled or not on Firestore
-                valueFromFirestore = isNotifActive;
-                temporarySwitchBoolean = isNotifActive;
-                switchNotification.setChecked(valueFromFirestore);
-                switchNotification.jumpDrawablesToCurrentState();
-            }
-        });
+            FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+                if (task.getResult() != null) {
+
+                    Boolean isNotifActive = (Boolean) task.getResult().get("notificationActive");
+                    if (isNotifActive != null) {
+
+                        //Check or Uncheck switch if notification are enabled or not on Firestore
+                        valueFromFirestore = isNotifActive;
+                        temporarySwitchBoolean = isNotifActive;
+                        switchNotification.setChecked(valueFromFirestore);
+                        switchNotification.jumpDrawablesToCurrentState();
+                    }
+                }
+            });
+
+        }
+
     }
 }

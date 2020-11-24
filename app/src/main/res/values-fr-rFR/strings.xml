@@ -1,17 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Go4Lunch</string>
-    <string name="headline">Trouve un resto cool et invite tes collègues à déjeuner!</string>
-    <string name="text_google_login">Se connecter avec Google</string>
-    <string name="text_facebook_login">Se connecter avec Facebook</string>
-    <string name="navbar_map">Carte</string>
-    <string name="navbar_list">Liste</string>
-    <string name="navbar_workmates">Collègues</string>
+
+    <!-- Used in NavigationDrawer -->
+    <string name="navigation_drawer_open">Ouvrir le drawer</string>
+    <string name="navigation_drawer_close">Fermer le drawer</string>
     <string name="drawer_lunch">VOTRE DÉJEUNER</string>
     <string name="drawer_settings">PARAMÈTRES</string>
     <string name="drawer_logout">SE DÉCONNECTER</string>
-    <string name="settings_activity_title">Paramètres</string>
+
+    <!-- Used in Activity title -->
     <string name="toolbar_first_title">J\'ai Faim!</string>
     <string name="toolbar_second_title">Collègues disponibles</string>
-    <string name="navbar_chat">Chat</string>
+    <string name="settings_activity_title">Paramètres</string>
+    <string name="navbar_chat">Discussion</string>
+
+    <!-- Used in NavBar -->
+    <string name="navbar_map">Carte</string>
+    <string name="navbar_list">Liste</string>
+    <string name="navbar_workmates">Collègues</string>
+
+    <!--Texts-->
+    <string name="headline">Trouve un resto cool et invite tes collègues à déjeuner!</string>
+    <string name="text_google_login">Se connecter avec Google</string>
+    <string name="text_facebook_login">Se connecter avec Facebook</string>
+    <string name="message_sender_title">Vous</string>
+    <string name="you_are_joining">Vous y mangez !</string>
+    <string name="you_didnt_decided_yet">Vous n\'avez pas encore décidé</string>
+    <string name="cant_find_opening_hours">Horaires non disponible</string>
+    <string name="liked">Aimé</string>
+    <string name="like">Aimer</string>
+    <string name="detail_name_placeholder">Nom</string>
+    <string name="detail_address_placeholder">Adresse</string>
+    <string name="detail_call_placeholder">Appeler</string>
+    <string name="detail_website_placeholder">Site web</string>
+    <string name="settings_title">Paramètres des notifications</string>
+    <string name="settings_toggle_timer">Activer la notification de rappel</string>
+    <string name="drawer_email_placeholder">votre@email.com</string>
+    <string name="edittext_message_hint">Votre message…</string>
+    <string name="message_content_placeholder">Message</string>
+    <string name="item_restaurant_distance_placeholder">0m</string>
+    <string name="item_restaurant_openinghours_placeholder">Horaires</string>
+    <string name="title_search">Rechercher</string>
+    <string name="toast_failed_auth">Authentification échouée</string>
+    <string name="toast_failed_usercreation">Création d\'utilisateur échouée</string>
+    <string name="firestore_fail_message">Firebase Failed with error : </string>
+    <string name="settings_saving">Enregistrement…</string>
+    <string name="settings_saved">Paramètres sauvegardés</string>
+    <string name="empty_message_error">Vous ne pouvez pas envoyer de messages vides</string>
+    <string name="workmate_joining">%s y mange !</string>
+    <string name="workmate_not_decided">%s n\'a pas encore décidé</string>
+    <string name="workmate_eating">%s mange à %s</string>
+    <string name="you_are_eating_at">Vous mangez à %s</string>
+
+
+
 </resources>

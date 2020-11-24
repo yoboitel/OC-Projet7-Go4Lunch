@@ -2,13 +2,11 @@ package com.yohan.go4lunch.notification;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import androidx.core.app.NotificationCompat;
-
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -16,9 +14,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.yohan.go4lunch.R;
-import com.yohan.go4lunch.adapter.WorkmatesAdapter;
-import com.yohan.go4lunch.model.User;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,18 +27,24 @@ public class NotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         this.context = context;
 
-        //Check if user has choosed a restaurant to eat so we can show him the notification or not
-        FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 
-            String restaurantId = (String) task.getResult().get("choosedRestaurantId");
-            if (restaurantId != null) {
+            //Check if user has choosed a restaurant to eat so we can show him the notification or not
+            FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
 
-                //Check if user enabled notification in setings or not
-                Boolean isNotifEnabled = (Boolean) task.getResult().get("notificationActive");
-                if (isNotifEnabled)
-                    getPlaceInfosFromId(restaurantId);
-            }
-        });
+                if (task.getResult() != null) {
+                    String restaurantId = (String) task.getResult().get("choosedRestaurantId");
+                    if (restaurantId != null) {
+                        //Check if user enabled notification in setings or not
+                        boolean isNotifEnabled = (boolean) task.getResult().get("notificationActive");
+                        if (isNotifEnabled)
+                            getPlaceInfosFromId(restaurantId);
+                    }
+                }
+            });
+
+        }
+
     }
 
     private void getPlaceInfosFromId(String placeId) {
@@ -63,13 +64,14 @@ public class NotificationReceiver extends BroadcastReceiver {
         ArrayList<String> participantsNameList = new ArrayList<>();
 
         FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task -> {
-            for (DocumentSnapshot querySnapshot: task.getResult()){
-
-                String restaurant = querySnapshot.getString("choosedRestaurantId");
-                if (restaurant != null) {
-                    if (restaurant.equals(restaurantId)) {
-                        //For each users that goes to this restaurant , add its name in the list.
-                        participantsNameList.add(querySnapshot.getString("firstnameAndName"));
+            if (task.getResult() != null) {
+                for (DocumentSnapshot querySnapshot : task.getResult()) {
+                    String restaurant = querySnapshot.getString("choosedRestaurantId");
+                    if (restaurant != null) {
+                        if (restaurant.equals(restaurantId)) {
+                            //For each users that goes to this restaurant , add its name in the list.
+                            participantsNameList.add(querySnapshot.getString("firstnameAndName"));
+                        }
                     }
                 }
             }

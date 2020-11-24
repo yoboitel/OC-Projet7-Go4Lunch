@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -22,7 +21,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="NestedWeights">
 
                 <TextView
                     android:id="@+id/tvListRestaurantName"
@@ -30,7 +30,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
                     android:gravity="center_vertical"
-                    android:text="Name"
+                    android:text="@string/detail_name_placeholder"
                     android:textColor="@color/colorPrimaryDark"
                     android:textStyle="bold" />
 
@@ -41,7 +41,7 @@
                     android:layout_gravity="end"
                     android:layout_weight="0.8"
                     android:gravity="center_vertical"
-                    android:text="0m" />
+                    android:text="@string/item_restaurant_distance_placeholder" />
             </LinearLayout>
 
             <LinearLayout
@@ -56,7 +56,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
                     android:gravity="center_vertical"
-                    android:text="Address" />
+                    android:text="@string/detail_address_placeholder" />
 
                 <TextView
                     android:id="@+id/tvListRestaurantNbPeopleEating"
@@ -80,7 +80,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
                     android:gravity="center_vertical"
-                    android:text="Opening hours"
+                    android:text="@string/item_restaurant_openinghours_placeholder"
                     android:textStyle="italic" />
 
                 <ImageView
@@ -88,7 +88,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="0.8"
-                    android:paddingEnd="8dp" />
+                    android:paddingEnd="8dp"
+                    tools:ignore="ContentDescription,RtlSymmetry" />
 
             </LinearLayout>
 
@@ -100,7 +101,8 @@
             android:layout_height="match_parent"
             android:layout_weight="0.75"
             android:scaleType="centerCrop"
-            tools:srcCompat="@tools:sample/avatars" />
+            tools:srcCompat="@tools:sample/avatars"
+            tools:ignore="ContentDescription" />
 
     </LinearLayout>
 

@@ -7,14 +7,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
@@ -33,8 +31,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.model.OpeningHours;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.model.RectangularBounds;
@@ -49,23 +45,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.yohan.go4lunch.BuildConfig;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.activity.RestaurantDetailActivity;
-import com.yohan.go4lunch.model.Restaurant;
-
 import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     private GoogleMap gMap;
     private FusedLocationProviderClient fusedLocationClient;
-    private int ZOOM_LEVEL = 15; //This goes up to 21
+    private final int ZOOM_LEVEL = 15; //This goes up to 21
     private PlacesClient mPlacesClient;
     private Location mLastKnownLocation;
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private final OnMapReadyCallback callback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap googleMap) {
 
@@ -109,22 +102,23 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
                                 FindCurrentPlaceResponse response = task.getResult();
                                 if (response != null) {
                                     for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                                        Log.d("NEARBOAT", String.format("Place '%s' has likelihood: %f", placeLikelihood.getPlace().getTypes(), placeLikelihood.getLikelihood()));
+
                                         Place currPlace = placeLikelihood.getPlace();
 
                                         //KEEP ONLY RESULTS WITH RESTAURANT TYPE
-                                        if (currPlace.getTypes().contains(Place.Type.RESTAURANT)) {
+                                        if (Objects.requireNonNull(currPlace.getTypes()).contains(Place.Type.RESTAURANT)) {
 
                                             final Integer[] participantsCount = {0};
 
                                             //COUNT ALL PARTICIPANTS TO THIS RESTAURANT
                                             FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task2 -> {
-                                                for (DocumentSnapshot querySnapshot: task2.getResult()){
-
-                                                    String restaurant = querySnapshot.getString("choosedRestaurantId");
-                                                    if (restaurant != null) {
-                                                        if (restaurant.equals(currPlace.getId())) {
-                                                            participantsCount[0]++;
+                                                if (task2.getResult() != null) {
+                                                    for (DocumentSnapshot querySnapshot : task2.getResult()) {
+                                                        String restaurant = querySnapshot.getString("choosedRestaurantId");
+                                                        if (restaurant != null) {
+                                                            if (restaurant.equals(currPlace.getId())) {
+                                                                participantsCount[0]++;
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -134,12 +128,15 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
                                                 if (participantsCount[0] > 0)
                                                     defaultMarker = "ic_marker_green";
 
-                                                //PUT THE MARKER ON THE MAP
-                                                gMap.addMarker(new MarkerOptions()
-                                                        .position(new LatLng(currPlace.getLatLng().latitude, currPlace.getLatLng().longitude))
-                                                        .title(currPlace.getName())
-                                                        .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(defaultMarker,100,135))))
-                                                        .setTag(currPlace.getId());
+                                                if (currPlace.getLatLng() != null) {
+
+                                                    //PUT THE MARKER ON THE MAP
+                                                    gMap.addMarker(new MarkerOptions()
+                                                            .position(new LatLng(currPlace.getLatLng().latitude, currPlace.getLatLng().longitude))
+                                                            .title(currPlace.getName())
+                                                            .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(defaultMarker, 100, 135))))
+                                                            .setTag(currPlace.getId());
+                                                }
                                             });
                                         }
                                     }
@@ -148,7 +145,7 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
                                 Exception exception = task.getException();
                                 if (exception instanceof ApiException) {
                                     ApiException apiException = (ApiException) exception;
-                                    Log.d("NEARBOAT", "Place not found: " + apiException.getStatusCode());
+                                    Toast.makeText(requireActivity(), apiException.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -203,9 +200,8 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
     }
 
     public Bitmap resizeMapIcons(String iconName, int width, int height){
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getContext().getPackageName()));
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
-        return resizedBitmap;
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", requireContext().getPackageName()));
+        return Bitmap.createScaledBitmap(imageBitmap, width, height, false);
     }
 
 
@@ -214,7 +210,7 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
     public boolean onMarkerClick(Marker marker) {
 
         Intent intent = new Intent(requireActivity(), RestaurantDetailActivity.class);
-        intent.putExtra("EXTRA_RESTAURANT_ID", marker.getTag().toString());
+        intent.putExtra("EXTRA_RESTAURANT_ID", Objects.requireNonNull(marker.getTag()).toString());
         startActivity(intent);
 
         return false;
@@ -260,8 +256,6 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
                             Toast.makeText(requireContext(), apiException.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                } else {
-                    Toast.makeText(requireContext(), "LastKnowPosition is null", Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -277,11 +271,13 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
             LatLng latLng = mPlace.getLatLng();
 
             //Refresh the Map with the autocomplete predictions list pins
-            gMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(latLng.latitude, latLng.longitude))
-                    .title(mPlace.getName())
-                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("ic_marker_orange",100,135))))
-                    .setTag(prediction.getPlaceId());
+            if (latLng != null) {
+                gMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(latLng.latitude, latLng.longitude))
+                        .title(mPlace.getName())
+                        .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("ic_marker_orange",100,135))))
+                        .setTag(prediction.getPlaceId());
+            }
         });
     }
 

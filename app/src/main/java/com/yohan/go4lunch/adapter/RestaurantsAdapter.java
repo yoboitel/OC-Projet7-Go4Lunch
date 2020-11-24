@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -16,21 +15,17 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.model.Restaurant;
-import com.yohan.go4lunch.model.User;
-
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.ViewHolder> {
 
-    private Context context;
-    private List<Restaurant> list;
-    private OnItemClickListener onItemClickListener;
+    private final Context context;
+    private final List<Restaurant> list;
+    private final OnItemClickListener onItemClickListener;
     private PlacesClient mPlacesClient;
 
     public RestaurantsAdapter(Context context, List<Restaurant> list, OnItemClickListener onItemClickListener) {
@@ -44,23 +39,16 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
         public ViewHolder(View itemView) {
             super(itemView);
-
         }
 
-        public void bind(final Restaurant model, final OnItemClickListener listener) {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(getLayoutPosition());
-                }
-            });
+        public void bind(final OnItemClickListener listener) {
+            itemView.setOnClickListener(v -> listener.onItemClick(getLayoutPosition()));
         }
     }
 
     @NotNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
+    public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View view = inflater.inflate(R.layout.item_restaurants, parent, false);
@@ -77,7 +65,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
     public void onBindViewHolder(ViewHolder holder, int position) {
         Restaurant item = list.get(position);
 
-        holder.bind(item, onItemClickListener);
+        holder.bind(onItemClickListener);
 
         //Link views
         TextView tvRestaurantName = holder.itemView.findViewById(R.id.tvListRestaurantName);
@@ -109,7 +97,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         if (item.getOpeningHours() != null){
             tvRestaurantOpeningHour.setText(item.getOpeningHours().getWeekdayText().get(getDayOfWeek()));
         } else
-            tvRestaurantOpeningHour.setText("Can't find opening hours");
+            tvRestaurantOpeningHour.setText(R.string.cant_find_opening_hours);
 
         //Display Restaurant Distance
         if (item.getDistance() != null) {
@@ -161,18 +149,23 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         final Integer[] participantsCount = {0};
 
         FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task -> {
-            for (DocumentSnapshot querySnapshot: task.getResult()){
 
-                String restaurant = querySnapshot.getString("choosedRestaurantId");
-                if (restaurant != null) {
-                    if (restaurant.equals(restaurantId)) {
+            if (task.getResult() != null) {
 
-                        participantsCount[0]++;
-                        tvParticipantsCount.setText("(" + participantsCount[0] + ")");
-                        tvParticipantsCount.setVisibility(View.VISIBLE);
+                for (DocumentSnapshot querySnapshot : task.getResult()) {
+                    String restaurant = querySnapshot.getString("choosedRestaurantId");
+                    if (restaurant != null) {
+                        if (restaurant.equals(restaurantId)) {
+
+                            participantsCount[0]++;
+                            tvParticipantsCount.setText(String.format(Locale.getDefault(), "(%d)", participantsCount[0]));
+                            tvParticipantsCount.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
+
             }
+
         });
     }
 

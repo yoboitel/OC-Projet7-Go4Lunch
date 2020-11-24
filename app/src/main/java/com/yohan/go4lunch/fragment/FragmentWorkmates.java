@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.yohan.go4lunch.R;
 import com.yohan.go4lunch.activity.RestaurantDetailActivity;
 import com.yohan.go4lunch.adapter.WorkmatesAdapter;
@@ -54,28 +52,27 @@ public class FragmentWorkmates extends Fragment {
             workmatesList.clear();
 
         FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task -> {
-            for (DocumentSnapshot querySnapshot: task.getResult()){
 
-                //For each users document found in firestore, create a user object with its info and add it in the list.
-                User user= new User(
-                        querySnapshot.getString("uid"),
-                        querySnapshot.getString("firstnameAndName"),
-                        querySnapshot.getString("photoUrl"),
-                        querySnapshot.getString("choosedRestaurantId"),
-                        querySnapshot.getBoolean("notificationActive"));
+            if (task.getResult() != null) {
+                for (DocumentSnapshot querySnapshot : task.getResult()) {
+                    //For each users document found in firestore, create a user object with its info and add it in the list.
+                    User user = new User(
+                            querySnapshot.getString("uid"),
+                            querySnapshot.getString("firstnameAndName"),
+                            querySnapshot.getString("photoUrl"),
+                            querySnapshot.getString("choosedRestaurantId"),
+                            querySnapshot.getBoolean("notificationActive"));
 
-                workmatesList.add(user);
+                    workmatesList.add(user);
+                }
             }
 
-            workmatesAdapter = new WorkmatesAdapter(requireContext(), workmatesList, null, new WorkmatesAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position) {
-                    //Start Restaurant Detail Activity sending the Restaurant Id in Extra
-                    if (workmatesList.get(position).getChoosedRestaurantId() != null){
-                        Intent intent = new Intent(requireContext(), RestaurantDetailActivity.class);
-                        intent.putExtra("EXTRA_RESTAURANT_ID", workmatesList.get(position).getChoosedRestaurantId());
-                        startActivity(intent);
-                    }
+            workmatesAdapter = new WorkmatesAdapter(requireContext(), workmatesList, null, position -> {
+                //Start Restaurant Detail Activity sending the Restaurant Id in Extra
+                if (workmatesList.get(position).getChoosedRestaurantId() != null){
+                    Intent intent = new Intent(requireContext(), RestaurantDetailActivity.class);
+                    intent.putExtra("EXTRA_RESTAURANT_ID", workmatesList.get(position).getChoosedRestaurantId());
+                    startActivity(intent);
                 }
             });
             rcWorkmates.setAdapter(workmatesAdapter);

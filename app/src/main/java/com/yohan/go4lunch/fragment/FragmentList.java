@@ -5,15 +5,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
@@ -24,10 +21,8 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.OpeningHours;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -52,7 +47,6 @@ public class FragmentList extends Fragment {
 
     private List<Restaurant> mRestaurantList;
     private RestaurantsAdapter mAdapter;
-    private RecyclerView mRecyclerView;
     private FusedLocationProviderClient fusedLocationClient;
     private PlacesClient mPlacesClient;
     private Place mPlace;
@@ -78,18 +72,18 @@ public class FragmentList extends Fragment {
         mPlacesClient = com.google.android.libraries.places.api.Places.createClient(requireContext());
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        getDeviceLocation();
 
+        //ADAPTER
         mRestaurantList = new ArrayList<>();
-        mRecyclerView = v.findViewById(R.id.rcRestaurants);
-        mAdapter = new RestaurantsAdapter(requireContext(), mRestaurantList, new RestaurantsAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                //Start Restaurant Detail Activity sending the Restaurant Id in Extra
-                Intent intent = new Intent(requireContext(), RestaurantDetailActivity.class);
-                intent.putExtra("EXTRA_RESTAURANT_ID", mRestaurantList.get(position).getId());
-                startActivity(intent);
-            }
+        mAdapter = new RestaurantsAdapter(requireContext(), mRestaurantList, position -> {
+            //Start Restaurant Detail Activity sending the Restaurant Id in Extra
+            Intent intent = new Intent(requireContext(), RestaurantDetailActivity.class);
+            intent.putExtra("EXTRA_RESTAURANT_ID", mRestaurantList.get(position).getId());
+            startActivity(intent);
         });
+        //RECYCLER VIEW SETTINGS AND SET ADAPTER
+        RecyclerView mRecyclerView = v.findViewById(R.id.rcRestaurants);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
@@ -122,19 +116,22 @@ public class FragmentList extends Fragment {
                         placeResponse.addOnCompleteListener(task -> {
                             if (task.isSuccessful()){
                                 FindCurrentPlaceResponse response = task.getResult();
-                                for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                                    Log.d("NEARBOAT", String.format("Place '%s' has likelihood: %f", placeLikelihood.getPlace().getTypes(), placeLikelihood.getLikelihood()));
+                                if (response != null) {
+                                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
 
-                                    Place currPlace = placeLikelihood.getPlace();
-                                    if (currPlace.getTypes().contains(Place.Type.RESTAURANT)) {
-                                        getPlaceInfosFromId(currPlace.getId(), mRestaurantList);
+                                        Place currPlace = placeLikelihood.getPlace();
+                                        if (currPlace.getTypes() != null) {
+                                            if (currPlace.getTypes().contains(Place.Type.RESTAURANT)) {
+                                                getPlaceInfosFromId(currPlace.getId(), mRestaurantList);
+                                            }
+                                        }
                                     }
                                 }
                             } else {
                                 Exception exception = task.getException();
                                 if (exception instanceof ApiException) {
                                     ApiException apiException = (ApiException) exception;
-                                    Log.d("NEARBOAT", "Place not found: " + apiException.getStatusCode());
+                                    Toast.makeText(requireActivity(), apiException.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -158,7 +155,10 @@ public class FragmentList extends Fragment {
             OpeningHours openingHours = mPlace.getOpeningHours();
             LatLng latLng = mPlace.getLatLng();
             Double rating = mPlace.getRating();
-            String placeDistance = getDistanceFromLastKnownLocation(latLng.latitude, latLng.longitude);
+            String placeDistance = null;
+            if (latLng != null) {
+                placeDistance = getDistanceFromLastKnownLocation(latLng.latitude, latLng.longitude);
+            }
             PhotoMetadata photos;
             if (mPlace.getPhotoMetadatas() == null) {
                 photos = null;
@@ -219,8 +219,6 @@ public class FragmentList extends Fragment {
                             Toast.makeText(requireContext(), apiException.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                } else {
-                    Toast.makeText(requireContext(), "LastKnowPosition is null", Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }

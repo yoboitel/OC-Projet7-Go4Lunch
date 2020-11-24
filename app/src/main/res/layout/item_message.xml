@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
-            android:text="Name"
+            android:text="@string/detail_name_placeholder"
             android:textColor="@android:color/black"
             android:textStyle="bold" />
 
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
-            android:text="Message"
+            android:text="@string/message_content_placeholder"
             android:textColor="@android:color/black"/>
     </LinearLayout>
 

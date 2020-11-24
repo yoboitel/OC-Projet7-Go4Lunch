@@ -69,7 +69,8 @@
         app:menu="@menu/drawer_menu"
         android:backgroundTint="@color/colorDrawerOrange"
         app:itemTextColor="@android:color/white"
-        app:itemIconTint="@android:color/white">
+        app:itemIconTint="@android:color/white"
+        tools:targetApi="lollipop">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,7 +82,8 @@
                 android:id="@+id/imageView5"
                 android:layout_width="match_parent"
                 android:layout_height="130dp"
-                android:src="@drawable/bowl" />
+                app:srcCompat="@drawable/bowl"
+                tools:ignore="ContentDescription" />
         </LinearLayout>
 
     </com.google.android.material.navigation.NavigationView>

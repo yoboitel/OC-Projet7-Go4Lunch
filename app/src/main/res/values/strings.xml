@@ -6,23 +6,55 @@
     <string name="facebook_login_protocol_scheme" translatable="false">fb891861644627572</string>
     <string name="google_id_token" translatable="false">"702577599519-sppkh2kbc59g8b1cb33mvrm1smqrm3rc.apps.googleusercontent.com"</string>
 
+    <!-- Used in NavigationDrawer -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="drawer_lunch">YOUR LUNCH</string>
+    <string name="drawer_settings">SETTINGS</string>
+    <string name="drawer_logout">LOGOUT</string>
+
+    <!-- Used in Activity title -->
+    <string name="toolbar_first_title">I\'m Hungry!</string>
+    <string name="toolbar_second_title">Available workmates</string>
+    <string name="settings_activity_title">Settings</string>
+    <string name="navbar_chat">Chat</string>
+
+    <!-- Used in NavBar -->
+    <string name="navbar_map">Map View</string>
+    <string name="navbar_list">List View</string>
+    <string name="navbar_workmates">Workmates</string>
+
     <!--Texts-->
     <string name="headline">Find a nice restaurant and invite your co-workers for lunch!</string>
     <string name="text_google_login">Sign in with Google</string>
     <string name="text_facebook_login">Sign in with Facebook</string>
-    <string name="navbar_map">Map View</string>
-    <string name="navbar_list">List View</string>
-    <string name="navbar_workmates">Workmates</string>
-    <string name="drawer_lunch">YOUR LUNCH</string>
-    <string name="drawer_settings">SETTINGS</string>
-    <string name="drawer_logout">LOGOUT</string>
-    <string name="settings_activity_title">Settings</string>
-
-    <!-- Used in NavigationDrawer -->
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="toolbar_first_title">I\'m Hungry!</string>
-    <string name="toolbar_second_title">Available workmates</string>
-    <string name="navbar_chat">Chat</string>
+    <string name="message_sender_title">You</string>
+    <string name="you_are_joining">You are joining !</string>
+    <string name="you_didnt_decided_yet">You didn\'t decided yet</string>
+    <string name="cant_find_opening_hours">Can\'t find opening hours</string>
+    <string name="liked">Liked</string>
+    <string name="like">Like</string>
+    <string name="detail_name_placeholder">Name</string>
+    <string name="detail_address_placeholder">Address</string>
+    <string name="detail_call_placeholder">Call</string>
+    <string name="detail_website_placeholder">website</string>
+    <string name="settings_title">Notification Settings</string>
+    <string name="settings_toggle_timer">Enable reminder notification</string>
+    <string name="drawer_email_placeholder">your@email.com</string>
+    <string name="edittext_message_hint">Your message…</string>
+    <string name="message_content_placeholder">Message</string>
+    <string name="item_restaurant_distance_placeholder">0m</string>
+    <string name="item_restaurant_openinghours_placeholder">Opening hours</string>
+    <string name="title_search">Search</string>
+    <string name="toast_failed_auth">Authentication Failed</string>
+    <string name="toast_failed_usercreation">User Creation Failed</string>
+    <string name="firestore_fail_message">Firebase Failed with error : </string>
+    <string name="settings_saving">Saving…</string>
+    <string name="settings_saved">Settings Saved</string>
+    <string name="empty_message_error">Cannot send empty message</string>
+    <string name="workmate_joining">%s is joining !</string>
+    <string name="workmate_not_decided">%s hasn\'t decided yet</string>
+    <string name="workmate_eating">%s is eating at %s</string>
+    <string name="you_are_eating_at">You are eating at %s</string>
 
 </resources>

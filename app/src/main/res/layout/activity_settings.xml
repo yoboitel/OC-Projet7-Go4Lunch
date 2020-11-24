@@ -26,7 +26,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/abc_vector_test"
         app:title="@string/settings_activity_title"
-        app:titleTextColor="@android:color/white" />
+        app:titleTextColor="@android:color/white"
+        tools:ignore="PrivateResource" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -45,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
             android:gravity="center"
-            android:text="Notification Settings"
+            android:text="@string/settings_title"
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
@@ -59,7 +60,8 @@
             android:background="@drawable/background_white_rounded_card"
             android:elevation="8dp"
             android:padding="12dp"
-            android:text="Enable reminder notification" />
+            android:text="@string/settings_toggle_timer"
+            tools:targetApi="lollipop" />
 
     </LinearLayout>
 

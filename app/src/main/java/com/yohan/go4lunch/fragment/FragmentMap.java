@@ -56,9 +56,9 @@ import java.util.Objects;
 
 public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickListener {
 
+    private final int ZOOM_LEVEL = 15; //This goes up to 21
     private GoogleMap gMap;
     private FusedLocationProviderClient fusedLocationClient;
-    private final int ZOOM_LEVEL = 15; //This goes up to 21
     private PlacesClient mPlacesClient;
     private Location mLastKnownLocation;
 
@@ -74,24 +74,24 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
         }
     };
 
+    //Find nearby locations
     public void getDeviceLocation() {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //Permission not granted so ask for it
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
-        else {
+        } else {
             //Permission is granted so retrieve the user's last position
             fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null) {
 
                     mLastKnownLocation = location;
 
+                    //Setup Google Map
                     gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), ZOOM_LEVEL));
                     gMap.setMyLocationEnabled(true);
                     gMap.setOnMarkerClickListener(this);
                     gMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-                    //Find nearby locations
                     // Use fields to define the data types to return.
                     List<Place.Field> placeFields = Arrays.asList(Place.Field.TYPES, Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME);
 
@@ -102,19 +102,19 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
                     if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         Task<FindCurrentPlaceResponse> placeResponse = mPlacesClient.findCurrentPlace(request);
                         placeResponse.addOnCompleteListener(task -> {
-                            if (task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 FindCurrentPlaceResponse response = task.getResult();
                                 if (response != null) {
                                     for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
 
                                         Place currPlace = placeLikelihood.getPlace();
 
-                                        //KEEP ONLY RESULTS WITH RESTAURANT TYPE
+                                        //Keep only results with restaurant type
                                         if (Objects.requireNonNull(currPlace.getTypes()).contains(Place.Type.RESTAURANT)) {
 
                                             final Integer[] participantsCount = {0};
 
-                                            //COUNT ALL PARTICIPANTS TO THIS RESTAURANT
+                                            //Count all participants to this restaurant
                                             FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task2 -> {
                                                 if (task2.getResult() != null) {
                                                     for (DocumentSnapshot querySnapshot : task2.getResult()) {
@@ -134,7 +134,7 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
 
                                                 if (currPlace.getLatLng() != null) {
 
-                                                    //PUT THE MARKER ON THE MAP
+                                                    //Put the marker on the map
                                                     gMap.addMarker(new MarkerOptions()
                                                             .position(new LatLng(currPlace.getLatLng().latitude, currPlace.getLatLng().longitude))
                                                             .title(currPlace.getName())
@@ -160,7 +160,6 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
                     }
 
 
-
                 }
             });
         }
@@ -170,7 +169,7 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //GRANTED
+                //Permission Granted
                 getDeviceLocation();
             }
         }
@@ -203,8 +202,9 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
         }
     }
 
-    public Bitmap resizeMapIcons(String iconName, int width, int height){
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", requireContext().getPackageName()));
+    //Method to edit marker size
+    public Bitmap resizeMapIcons(String iconName, int width, int height) {
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(iconName, "drawable", requireContext().getPackageName()));
         return Bitmap.createScaledBitmap(imageBitmap, width, height, false);
     }
 
@@ -224,7 +224,7 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        inflater.inflate( R.menu.search_menu, menu);
+        inflater.inflate(R.menu.search_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -279,7 +279,7 @@ public class FragmentMap extends Fragment implements GoogleMap.OnMarkerClickList
                 gMap.addMarker(new MarkerOptions()
                         .position(new LatLng(latLng.latitude, latLng.longitude))
                         .title(mPlace.getName())
-                        .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("ic_marker_orange",100,135))))
+                        .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("ic_marker_orange", 100, 135))))
                         .setTag(prediction.getPlaceId());
             }
         });

@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //Method to initialize views
-    private void initialization(){
+    private void initialization() {
         //INITIALIZATION
         btnLoginFb = findViewById(R.id.btnLoginFb);
         loginButton = findViewById(R.id.login_button_fb);
@@ -149,13 +149,13 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void createUserInFirestore(){
+    private void createUserInFirestore() {
 
         FirebaseUser user = mAuth.getCurrentUser();
-            if (user != null) {
-                User newUser = new User(user.getUid(), user.getDisplayName(), user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null, null, true);
-                FirebaseFirestore.getInstance().collection("Users").document(user.getUid()).set(newUser, SetOptions.merge()).addOnSuccessListener(aVoid -> startActivity(new Intent(LoginActivity.this, MainActivity.class))).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, R.string.toast_failed_usercreation, Toast.LENGTH_SHORT).show());
-            }
+        if (user != null) {
+            User newUser = new User(user.getUid(), user.getDisplayName(), user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null, null, true);
+            FirebaseFirestore.getInstance().collection("Users").document(user.getUid()).set(newUser, SetOptions.merge()).addOnSuccessListener(aVoid -> startActivity(new Intent(LoginActivity.this, MainActivity.class))).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, R.string.toast_failed_usercreation, Toast.LENGTH_SHORT).show());
         }
+    }
 
 }

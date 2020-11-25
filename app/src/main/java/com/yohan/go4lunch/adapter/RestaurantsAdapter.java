@@ -38,18 +38,6 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         this.onItemClickListener = onItemClickListener;
     }
 
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-        }
-
-        public void bind(final OnItemClickListener listener) {
-            itemView.setOnClickListener(v -> listener.onItemClick(getLayoutPosition()));
-        }
-    }
-
     @NotNull
     @Override
     public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
@@ -63,7 +51,6 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
         return new ViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -88,7 +75,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         tvRestaurantAddress.setText(shorterAddress);
 
         //Display Restaurant Stars
-        if (item.getRating() != null){
+        if (item.getRating() != null) {
             if (item.getRating() >= 4)
                 ivRestaurantRating.setImageResource(R.drawable.stars3);
             if (item.getRating() < 4 && item.getRating() >= 3)
@@ -98,7 +85,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         }
 
         //Display Restaurant Opening Hours
-        if (item.getOpeningHours() != null){
+        if (item.getOpeningHours() != null) {
             tvRestaurantOpeningHour.setText(item.getOpeningHours().getWeekdayText().get(getDayOfWeek()));
         } else
             tvRestaurantOpeningHour.setText(R.string.cant_find_opening_hours);
@@ -115,7 +102,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();
                 ivRestaurantPhoto.setImageBitmap(bitmap);
             });
-        } else{
+        } else {
             ivRestaurantPhoto.setImageResource(R.drawable.ic_no_photo);
         }
 
@@ -126,10 +113,6 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
     @Override
     public int getItemCount() {
         return list.size();
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(int position);
     }
 
     //Retrieve the day of the week to display the opening hours of today
@@ -171,6 +154,22 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             }
 
         });
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        //Create a listener on the restaurant item view so we can use it when we create the adapter
+        public void bind(final OnItemClickListener listener) {
+            itemView.setOnClickListener(v -> listener.onItemClick(getLayoutPosition()));
+        }
     }
 
 }

@@ -60,7 +60,7 @@ public class FragmentChat extends Fragment {
         ImageButton ivSend = v.findViewById(R.id.ivSend);
         ivSend.setOnClickListener(view -> {
 
-            if (!etMessageZone.getText().toString().isEmpty()){
+            if (!etMessageZone.getText().toString().isEmpty()) {
 
                 if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 
@@ -84,8 +84,8 @@ public class FragmentChat extends Fragment {
 
     private void loadChatMessagesFromFirestore() {
 
-            if(messagesList.size()>0)
-                messagesList.clear();
+        if (messagesList.size() > 0)
+            messagesList.clear();
 
         //Get user name and photo before sending message to firestore
         FirebaseFirestore.getInstance().collection("Chat").orderBy("timestamp", Query.Direction.ASCENDING).get().addOnCompleteListener(task -> {

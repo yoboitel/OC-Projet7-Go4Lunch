@@ -31,7 +31,7 @@ public class SettingsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(view -> {
 
             //Save when user quit the settings activity if needed
-            if (temporarySwitchBoolean != valueFromFirestore){
+            if (temporarySwitchBoolean != valueFromFirestore) {
 
                 Toast.makeText(SettingsActivity.this, R.string.settings_saving, Toast.LENGTH_SHORT).show();
 
@@ -48,8 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
                             })
                             .addOnFailureListener(e -> Toast.makeText(getBaseContext(), getString(R.string.firestore_fail_message) + e, Toast.LENGTH_SHORT).show());
                 }
-            }
-            else
+            } else
                 //Leave Activity if no need to save
                 SettingsActivity.this.onBackPressed();
         });

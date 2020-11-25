@@ -10,7 +10,8 @@ public class Message {
     private String authorName;
     private String authorPhotoUrl;
     private String authorUid;
-    private @ServerTimestamp Date timestamp;
+    private @ServerTimestamp
+    Date timestamp;
 
 
     public Message(String message, String authorName, String authorPhotoUrl, String authorUid, Date timestamp) {

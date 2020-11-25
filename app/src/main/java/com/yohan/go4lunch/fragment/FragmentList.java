@@ -80,7 +80,7 @@ public class FragmentList extends Fragment {
         //ADAPTER
         mRestaurantList = new ArrayList<>();
         mAdapter = new RestaurantsAdapter(requireContext(), mRestaurantList, position -> {
-            //Start Restaurant Detail Activity sending the Restaurant Id in Extra
+            //Start Restaurant Detail Activity sending the Restaurant Id in Extra when it's clicked
             Intent intent = new Intent(requireContext(), RestaurantDetailActivity.class);
             intent.putExtra("EXTRA_RESTAURANT_ID", mRestaurantList.get(position).getId());
             startActivity(intent);
@@ -94,19 +94,18 @@ public class FragmentList extends Fragment {
         return v;
     }
 
+    //Find nearby locations
     public void getDeviceLocation() {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //Permission not granted so ask for it
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
-        else {
+        } else {
             //Permission is granted so retrieve the user's last position
             fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null) {
 
                     mLastKnownLocation = location;
 
-                    //Find nearby locations
                     // Use fields to define the data types to return.
                     List<Place.Field> placeFields = Arrays.asList(Place.Field.TYPES, Place.Field.ID);
 
@@ -117,7 +116,7 @@ public class FragmentList extends Fragment {
                     if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         Task<FindCurrentPlaceResponse> placeResponse = mPlacesClient.findCurrentPlace(request);
                         placeResponse.addOnCompleteListener(task -> {
-                            if (task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 FindCurrentPlaceResponse response = task.getResult();
                                 if (response != null) {
                                     for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
@@ -125,6 +124,7 @@ public class FragmentList extends Fragment {
                                         Place currPlace = placeLikelihood.getPlace();
                                         if (currPlace.getTypes() != null) {
                                             if (currPlace.getTypes().contains(Place.Type.RESTAURANT)) {
+                                                //For each restaurant found, get its details
                                                 getPlaceInfosFromId(currPlace.getId(), mRestaurantList);
                                             }
                                         }
@@ -146,6 +146,7 @@ public class FragmentList extends Fragment {
         }
     }
 
+    //Method to retrieve infos on a given place from restaurant list and notify the adapter
     private void getPlaceInfosFromId(String placeId, List<Restaurant> restaurantList) {
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PHOTO_METADATAS, Place.Field.OPENING_HOURS);
         FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
@@ -174,20 +175,22 @@ public class FragmentList extends Fragment {
         });
     }
 
+    //Method to get the distance between user's location and a restaurant location
     public String getDistanceFromLastKnownLocation(Double lat, Double lng) {
         Location targetLocation = new Location("");
         targetLocation.setLatitude(lat);
         targetLocation.setLongitude(lng);
 
-        float distance =  targetLocation.distanceTo(mLastKnownLocation);
-        return (int)distance + "m";
+        float distance = targetLocation.distanceTo(mLastKnownLocation);
+        return (int) distance + "m";
     }
 
+    //To handle the autocomplete feature
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        inflater.inflate( R.menu.search_menu, menu);
+        inflater.inflate(R.menu.search_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -197,7 +200,9 @@ public class FragmentList extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                
+
+                //At each change in the edittext, perform a new request and update list visual.
+
                 if (mLastKnownLocation != null) {
 
                     // Create a RectangularBounds object from 2 points, southwest coordinates and northeast coordinates.

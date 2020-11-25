@@ -28,11 +28,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         this.list = list;
     }
 
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ViewHolder(View itemView) { super(itemView); }
-    }
-
     @NotNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -43,7 +38,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
         return new ViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -60,7 +54,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
         //Display messages on Right or Left depending if it's from the connected user or not
         LinearLayout linearItemMessage = holder.itemView.findViewById(R.id.linearItemMessage);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams. MATCH_PARENT , ViewGroup.LayoutParams.WRAP_CONTENT ) ;
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 
@@ -81,5 +75,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
     }
 }

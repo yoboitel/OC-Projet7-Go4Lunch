@@ -51,9 +51,10 @@ public class FragmentWorkmates extends Fragment {
 
     private void loadWorkmatesFromFirestore() {
 
-        if(workmatesList.size()>0)
+        if (workmatesList.size() > 0)
             workmatesList.clear();
 
+        //Retrieve workmates from firestore
         FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task -> {
 
             if (task.getResult() != null) {
@@ -72,7 +73,7 @@ public class FragmentWorkmates extends Fragment {
 
             workmatesAdapter = new WorkmatesAdapter(requireContext(), workmatesList, null, position -> {
                 //Start Restaurant Detail Activity sending the Restaurant Id in Extra
-                if (workmatesList.get(position).getChoosedRestaurantId() != null){
+                if (workmatesList.get(position).getChoosedRestaurantId() != null) {
                     Intent intent = new Intent(requireContext(), RestaurantDetailActivity.class);
                     intent.putExtra("EXTRA_RESTAURANT_ID", workmatesList.get(position).getChoosedRestaurantId());
                     startActivity(intent);

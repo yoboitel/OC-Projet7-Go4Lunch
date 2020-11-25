@@ -82,10 +82,9 @@ public class NotificationReceiver extends BroadcastReceiver {
             //Beautify participants list string
             StringBuilder participants = new StringBuilder();
             int i = 0;
-            for (String str: participantsNameList)
-            {
+            for (String str : participantsNameList) {
                 participants.append(str);
-                if (i != participantsNameList.size()-1)
+                if (i != participantsNameList.size() - 1)
                     participants.append(" and ");
                 else
                     participants.append(".");
@@ -109,8 +108,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-        {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
             notificationChannel.enableLights(true);

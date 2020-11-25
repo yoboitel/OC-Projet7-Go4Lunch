@@ -34,19 +34,6 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
         this.restaurantId = restaurantId;
     }
 
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-
-        }
-
-        public void bind(final OnItemClickListener listener) {
-            itemView.setOnClickListener(v -> listener.onItemClick(getLayoutPosition()));
-        }
-    }
-
     @NotNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -57,7 +44,6 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
 
         return new ViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -100,14 +86,26 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
         ivCell.setImageURI(item.getPhotoUrl());
     }
 
-
     @Override
     public int getItemCount() {
         return list.size();
     }
 
+
     public interface OnItemClickListener {
         void onItemClick(int position);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+        }
+
+        public void bind(final OnItemClickListener listener) {
+            itemView.setOnClickListener(v -> listener.onItemClick(getLayoutPosition()));
+        }
     }
 
 }

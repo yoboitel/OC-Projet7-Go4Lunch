@@ -40,7 +40,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     private ImageView ivPhoto, ivRating;
     private TextView tvName, tvAddress;
-    private Button btnPhone, btnLike,btnWebsite;
+    private Button btnPhone, btnLike, btnWebsite;
     private String restaurantId;
     private PlacesClient mPlacesClient;
     private FloatingActionButton fabGoToRestaurant;
@@ -78,7 +78,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         loadParticipantsFromFirestore();
 
         //Init FAB with right image ressource
-
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 
             FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
@@ -120,10 +119,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                 @SuppressWarnings("unchecked")
                 List<String> likedRestaurants = (List<String>) Objects.requireNonNull(task.getResult()).get("liked");
                 likeRestaurant();
-                if (likedRestaurants != null){
+                if (likedRestaurants != null) {
                     //Like Restaurant
-                    for (String likedRestaurantId : likedRestaurants){
-                        if (likedRestaurantId.equals(restaurantId)){
+                    for (String likedRestaurantId : likedRestaurants) {
+                        if (likedRestaurantId.equals(restaurantId)) {
 
                             //Unlike Restaurant
                             unlikeRestaurant();
@@ -155,13 +154,13 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();
                 ivPhoto.setImageBitmap(bitmap);
             });
-        } else{
+        } else {
             ivPhoto.setImageResource(R.drawable.ic_no_photo);
         }
         //Set name
         tvName.setText(mPlace.getName());
         //Set rating
-        if (mPlace.getRating() != null){
+        if (mPlace.getRating() != null) {
             if (mPlace.getRating() >= 4)
                 ivRating.setImageResource(R.drawable.stars3);
             if (mPlace.getRating() < 4 && mPlace.getRating() >= 3)
@@ -175,30 +174,29 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             tvAddress.setText(shorterAddress);
         }
         //Set phone
-        if (mPlace.getPhoneNumber() != null){
+        if (mPlace.getPhoneNumber() != null) {
             btnPhone.setOnClickListener(view -> {
                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                callIntent.setData(Uri.parse("tel:"+mPlace.getPhoneNumber()));
+                callIntent.setData(Uri.parse("tel:" + mPlace.getPhoneNumber()));
                 startActivity(callIntent);
             });
         } else
             btnPhone.setVisibility(View.GONE);
         //Set website
         if (mPlace.getWebsiteUri() != null) {
-            btnWebsite.setOnClickListener(view -> startActivity(new Intent(Intent.ACTION_VIEW,mPlace.getWebsiteUri())));
+            btnWebsite.setOnClickListener(view -> startActivity(new Intent(Intent.ACTION_VIEW, mPlace.getWebsiteUri())));
         } else
             btnWebsite.setVisibility(View.GONE);
     }
 
-    private void goToThisRestaurant(boolean isTrue){
+    private void goToThisRestaurant(boolean isTrue) {
         int drawable;
         //Update in firestore
         Map<String, Object> data = new HashMap<>();
         if (isTrue) {
             data.put("choosedRestaurantId", restaurantId);
             drawable = R.drawable.ic_check_activated;
-        }
-        else {
+        } else {
             data.put("choosedRestaurantId", null);
             drawable = R.drawable.ic_check_desactivated;
         }
@@ -216,7 +214,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     private void loadParticipantsFromFirestore() {
 
-        if(participantsList.size()>0)
+        if (participantsList.size() > 0)
             participantsList.clear();
 
         FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(task -> {
@@ -253,7 +251,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void likeRestaurant(){
+    private void likeRestaurant() {
         //Like Restaurant
         btnLike.setText(R.string.liked);
         btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_filled, 0, 0);
@@ -262,7 +260,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                 .update("liked", FieldValue.arrayUnion(restaurantId));
     }
 
-    private void unlikeRestaurant(){
+    private void unlikeRestaurant() {
         //Unlike Restaurant
         btnLike.setText(R.string.like);
         btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_unfilled, 0, 0);
@@ -276,10 +274,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("Users").document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).get().addOnCompleteListener(task -> {
             @SuppressWarnings("unchecked")
             List<String> likedRestaurants = (List<String>) Objects.requireNonNull(task.getResult()).get("liked");
-            if (likedRestaurants != null){
+            if (likedRestaurants != null) {
 
-                for (String likedRestaurantId : likedRestaurants){
-                    if (likedRestaurantId.equals(restaurantId)){
+                for (String likedRestaurantId : likedRestaurants) {
+                    if (likedRestaurantId.equals(restaurantId)) {
 
                         btnLike.setText(R.string.liked);
                         btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_filled, 0, 0);

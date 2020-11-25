@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void displayFragment(Fragment fragment) {
+    public void displayFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_container, fragment);
         transaction.addToBackStack(null);
@@ -128,8 +128,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         //Handle Navigation Item Click
-        switch (item.getItemId()){
-            case R.id.drawer_lunch :
+        switch (item.getItemId()) {
+            case R.id.drawer_lunch:
                 if (FirebaseAuth.getInstance().getCurrentUser() != null) {
                     FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
                         if (task.getResult() != null) {
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void setDailyNotification(){
+    public void setDailyNotification() {
 
         //Set the Alarm at 12 in the afternoon
         Calendar calendar = Calendar.getInstance();
